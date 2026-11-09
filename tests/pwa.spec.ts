@@ -49,11 +49,15 @@ test("production PWA: installability, authenticated cache boundary, native offli
     expect(sw.headers()["cloudflare-cdn-cache-control"]).toBe("no-store");
     await ctx.setOffline(true);
     await cdp.send("Network.enable");
+    // Older Chromium updates navigator via setOffline and lacks this newer CDP method.
+    // Only tolerate method absence; the real offline/network assertions below still apply.
     await cdp.send("Network.overrideNetworkState", {
       offline: true,
       latency: 0,
       downloadThroughput: 0,
       uploadThroughput: 0,
+    }).catch((error) => {
+      if (!String(error).includes("'Network.overrideNetworkState' wasn't found")) throw error;
     });
     expect(await page.evaluate(() => navigator.onLine)).toBe(false);
     expect(
@@ -79,6 +83,8 @@ test("production PWA: installability, authenticated cache boundary, native offli
       latency: 0,
       downloadThroughput: -1,
       uploadThroughput: -1,
+    }).catch((error) => {
+      if (!String(error).includes("'Network.overrideNetworkState' wasn't found")) throw error;
     });
     await expect(page.getByTestId("room-code")).toHaveText(code);
     await page.screenshot({
