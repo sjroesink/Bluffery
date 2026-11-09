@@ -259,3 +259,25 @@ func TestLeaveAndRemoveMidGame(t *testing.T) {
 		t.Fatal("empty room kept", n)
 	}
 }
+func TestMakeHost(t *testing.T) {
+	s := setup(t)
+	cs, v := table(t, s)
+	me := func(c string) string { _, p, _ := req(t, s, c, "/api/state", ""); return p["me"].(string) }
+	if st, _ := cmd(t, s, cs[1], v, "make-host", me(cs[2])); st != 403 {
+		t.Fatal("non-host transfer", st)
+	}
+	if st, _ := cmd(t, s, cs[0], v, "make-host", "nobody"); st != 400 {
+		t.Fatal("unknown target", st)
+	}
+	st, v := cmd(t, s, cs[0], v, "make-host", me(cs[2]))
+	if st != 200 || v["host"] != me(cs[2]) {
+		t.Fatal(st, v)
+	}
+	// The old host is an ordinary player now, and the new one can remove them.
+	if st, _ := cmd(t, s, cs[0], v, "start", ""); st != 403 {
+		t.Fatal("old host still in charge", st)
+	}
+	if st, x := cmd(t, s, cs[2], v, "remove", me(cs[0])); st != 200 || len(x["players"].([]any)) != 3 {
+		t.Fatal(st, x)
+	}
+}

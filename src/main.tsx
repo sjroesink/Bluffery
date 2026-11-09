@@ -187,6 +187,7 @@ const icons = {
   plus: "M12 5v14M5 12h14",
   minus: "M5 12h14",
   refresh: "M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5",
+  crown: "M4 19h16M4 15 3 7l5 4 4-6 4 6 5-4-1 8Z",
   exit: "M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H10",
 };
 const maxTurns = 5;
@@ -431,7 +432,7 @@ function App() {
   const who = (id?: string) =>
     state?.players.find((p) => p.id === id)?.name || "de rader";
   const [sheet, setSheet] = useState<"help" | "stand" | "leave" | null>(null),
-    [kick, setKick] = useState(""),
+    [armed, setArmed] = useState(""),
     [outcome, setOutcome] = useState<string | null>(null),
     [veiled, setVeiled] = useState(false),
     [copied, setCopied] = useState(false),
@@ -557,6 +558,33 @@ function App() {
         setError("Delen lukt niet. Laat de QR-code scannen.");
     }
   }
+  useEffect(() => {
+    if (!armed) return;
+    const t = setTimeout(() => setArmed(""), 3000);
+    return () => clearTimeout(t);
+  }, [armed]);
+  // Irreversible host actions take a second tap on the same button.
+  const twoTap = (o: {
+    key: string;
+    className: string;
+    label: string;
+    confirm: string;
+    icon: string;
+    run: () => void;
+  }) => (
+    <button
+      className={o.className + (armed === o.key ? " armed" : "")}
+      aria-label={armed === o.key ? `${o.label}: bevestig` : o.label}
+      disabled={disabled}
+      onClick={() => {
+        if (armed !== o.key) return setArmed(o.key);
+        setArmed("");
+        o.run();
+      }}
+    >
+      <span>{armed === o.key ? o.confirm : <Icon d={o.icon} size={14} />}</span>
+    </button>
+  );
   const helpButton = (
     <button
       className="icon-btn"
@@ -782,6 +810,16 @@ function App() {
                 />
                 <b>{p.name}</b>
                 {p.id === state.host && <span className="badge">host</span>}
+                {host &&
+                  p.id !== state.host &&
+                  twoTap({
+                    key: "host:" + p.id,
+                    className: "promote",
+                    label: `${p.name} host maken`,
+                    confirm: "Host?",
+                    icon: icons.crown,
+                    run: () => action("make-host", { target: p.id }),
+                  })}
                 {host && p.id !== state.host && (
                   <button
                     className="remove"
@@ -1237,7 +1275,7 @@ function App() {
           className="backdrop"
           onClick={() => {
             setSheet(null);
-            setKick("");
+            setArmed("");
           }}
         >
           <section
@@ -1262,7 +1300,7 @@ function App() {
                 autoFocus
                 onClick={() => {
                   setSheet(null);
-                  setKick("");
+                  setArmed("");
                 }}
               >
                 <Icon d={icons.close} />
@@ -1281,26 +1319,24 @@ function App() {
                       </span>
                       <span className="score">{p.score}</span>
                       {host && p.id !== state?.host && (
-                        <button
-                          className={"kick" + (kick === p.id ? " armed" : "")}
-                          aria-label={
-                            kick === p.id
-                              ? `${p.name} echt verwijderen`
-                              : `${p.name} verwijderen`
-                          }
-                          disabled={disabled}
-                          onClick={() => {
-                            if (kick !== p.id) return setKick(p.id);
-                            setKick("");
-                            action("remove", { target: p.id });
-                          }}
-                        >
-                          {kick === p.id ? (
-                            "Eruit"
-                          ) : (
-                            <Icon d={icons.close} size={14} />
-                          )}
-                        </button>
+                        <>
+                          {twoTap({
+                            key: "host:" + p.id,
+                            className: "kick",
+                            label: `${p.name} host maken`,
+                            confirm: "Host",
+                            icon: icons.crown,
+                            run: () => action("make-host", { target: p.id }),
+                          })}
+                          {twoTap({
+                            key: "kick:" + p.id,
+                            className: "kick",
+                            label: `${p.name} verwijderen`,
+                            confirm: "Eruit",
+                            icon: icons.close,
+                            run: () => action("remove", { target: p.id }),
+                          })}
+                        </>
                       )}
                     </li>
                   ))}
@@ -1309,7 +1345,7 @@ function App() {
                 <button
                   className="btn small ghost"
                   onClick={() => {
-                    setKick("");
+                    setArmed("");
                     setSheet("leave");
                   }}
                 >

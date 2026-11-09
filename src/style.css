@@ -600,6 +600,37 @@ ol {
   align-items: center;
   justify-content: center;
 }
+.promote {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+}
+.promote span {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.promote.armed span {
+  padding: 0 8px;
+  background: var(--orange);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+.promote:disabled,
+.remove:disabled {
+  opacity: 0.4;
+}
 .seat {
   border: 2px dashed var(--surface-2);
   border-radius: 20px;
@@ -865,7 +896,24 @@ ol {
   flex-grow: 1;
   min-width: 0;
   font-size: 17px;
-  overflow-wrap: anywhere;
+  line-height: 1.2;
+  /* Wrap between words; only a name too long for one line is hyphenated. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+@media (max-width: 360px) {
+  .row {
+    gap: 8px;
+    padding-left: 10px;
+  }
+  .row .face {
+    width: 40px;
+    height: 40px;
+  }
+  .accuse {
+    min-width: 0;
+    padding: 0 12px;
+  }
 }
 .row.kept {
   box-shadow: inset 0 0 0 2px var(--text);
@@ -1346,7 +1394,8 @@ ol {
 }
 .result-name b {
   font-size: 16px;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 .result-name span {
   font-size: 12px;
@@ -1538,7 +1587,8 @@ ol {
   display: flex;
   flex-direction: column;
   font-weight: 700;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 .standings small {
   font-size: 12px;
@@ -1548,10 +1598,19 @@ ol {
 .standings .score {
   font: 800 20px var(--display);
 }
+.standings .score + .kick {
+  margin-left: 4px;
+}
+.standings .kick + .kick {
+  margin-left: -6px;
+}
+.standings .kick:last-child {
+  margin-right: -8px;
+}
 .standings .kick {
   min-width: 36px;
   height: 36px;
-  margin-right: -8px;
+  flex-shrink: 0;
   border-radius: 18px;
   background: var(--face);
   color: var(--muted);

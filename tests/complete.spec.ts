@@ -264,7 +264,7 @@ test("players leave and the host removes someone mid-game", async ({
     // The host removes a player during the turn, with a second tap to confirm.
     await pages[0].getByRole("button", { name: "Stand" }).click();
     await pages[0].getByRole("button", { name: "Speler 4 verwijderen" }).click();
-    await pages[0].getByRole("button", { name: "Speler 4 echt verwijderen" }).click();
+    await pages[0].getByRole("button", { name: "Speler 4 verwijderen: bevestig" }).click();
     await expect(pages[4].getByRole("alert")).toHaveText("Je zit niet meer aan deze tafel.");
     await expect(pages[4].getByRole("button", { name: "Nieuwe tafel" })).toBeVisible();
     await expect(pages[0].locator(".sheet .standings li")).toHaveCount(4);
@@ -285,8 +285,40 @@ test("players leave and the host removes someone mid-game", async ({
     // Down to two players the game ends.
     await pages[0].getByRole("button", { name: "Stand" }).click();
     await pages[0].getByRole("button", { name: "Speler 2 verwijderen" }).click();
-    await pages[0].getByRole("button", { name: "Speler 2 echt verwijderen" }).click();
+    await pages[0].getByRole("button", { name: "Speler 2 verwijderen: bevestig" }).click();
     await expect(pages[1].getByRole("heading", { name: / (wint|winnen)$/ })).toBeVisible();
+  } finally {
+    await Promise.all(ctx.map((c) => c.close()));
+  }
+});
+
+test("host hands the role to another player in the lobby", async ({
+  browser,
+}) => {
+  const ctx = await Promise.all(
+    [0, 1].map(() =>
+      browser.newContext({ viewport: { width: 320, height: 760 } }),
+    ),
+  );
+  const pages = await Promise.all(ctx.map((c) => c.newPage()));
+  try {
+    await pages[0].goto("/");
+    await pages[0].getByLabel("Je naam").fill("Host");
+    await pages[0].getByRole("button", { name: "Nieuwe tafel" }).click();
+    const code = await pages[0].getByTestId("room-code").innerText();
+    await pages[1].goto("/?code=" + code);
+    await pages[1].getByLabel("Je naam").fill("Opvolger");
+    await pages[1].getByRole("button", { name: "Doe mee" }).click();
+    await expect(pages[1].getByText("Wachten op de host")).toBeVisible();
+    await pages[0].getByRole("button", { name: "Opvolger host maken" }).click();
+    await pages[0]
+      .getByRole("button", { name: "Opvolger host maken: bevestig" })
+      .click();
+    await expect(pages[0].getByText("Wachten op de host")).toBeVisible();
+    await expect(pages[1].getByLabel("Beurten per speler")).toBeVisible();
+    await expect(
+      pages[1].getByRole("button", { name: "Host host maken" }),
+    ).toBeVisible();
   } finally {
     await Promise.all(ctx.map((c) => c.close()));
   }

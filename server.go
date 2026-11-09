@@ -652,6 +652,20 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 		dropPlayer(r, target)
 	case "leave":
 		dropPlayer(r, a)
+	case "make-host":
+		if !host {
+			return 403, "Alleen de host kan de rol overdragen."
+		}
+		target := ""
+		for _, p := range r.Players {
+			if publicID(p.ID) == c.Target && p.ID != r.Host {
+				target = p.ID
+			}
+		}
+		if target == "" {
+			return 400, "Kies een andere speler."
+		}
+		r.Host = target
 	case "deal":
 		if a != guesser || r.Phase != "ready" {
 			return 403, "Alleen de rader kan nu uitdelen."
