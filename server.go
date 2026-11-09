@@ -48,6 +48,7 @@ type Room struct {
 	Used     []string          `json:"used"`
 	Result   string            `json:"result,omitempty"`
 	Gains    map[string]int    `json:"gains,omitempty"`
+	Skips    bool              `json:"skips,omitempty"`
 }
 type Command struct {
 	ID      string `json:"id"`
@@ -57,6 +58,7 @@ type Command struct {
 	Version int    `json:"version"`
 	Target  string `json:"target,omitempty"`
 	Turns   int    `json:"turns,omitempty"`
+	Skips   bool   `json:"skips,omitempty"`
 }
 type Server struct {
 	db           *sql.DB
@@ -419,7 +421,7 @@ func project(r Room, a string) map[string]any {
 	for i := range players {
 		players[i].ID = publicID(players[i].ID)
 	}
-	v := map[string]any{"code": r.Code, "version": r.Version, "phase": r.Phase, "players": players, "host": publicID(r.Host), "me": publicID(a), "turns": r.Turns, "turn": r.Turn, "totalTurns": len(r.Players) * r.Turns}
+	v := map[string]any{"code": r.Code, "version": r.Version, "phase": r.Phase, "players": players, "host": publicID(r.Host), "me": publicID(a), "turns": r.Turns, "turn": r.Turn, "totalTurns": len(r.Players) * r.Turns, "skips": r.Skips}
 	if r.Phase != "lobby" {
 		v["guesser"] = publicID(r.Players[r.Turn%len(r.Players)].ID)
 	}
@@ -616,6 +618,11 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 			return 400, fmt.Sprintf("Kies 1 tot en met %d beurten.", maxTurns)
 		}
 		r.Turns = c.Turns
+	case "allow-skips":
+		if !host || r.Phase == "finished" {
+			return 403, "Alleen de host tijdens het spel."
+		}
+		r.Skips = c.Skips
 	case "remove":
 		if !host || r.Phase != "lobby" {
 			return 403, "Verwijderen kan alleen in de lobby."
@@ -634,36 +641,16 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 		if a != guesser || r.Phase != "ready" {
 			return 403, "Alleen de rader kan nu uitdelen."
 		}
-		used := map[string]bool{}
-		for _, id := range r.Used {
-			used[id] = true
+		return s.deal(r, guesser)
+	case "skip":
+		if a != guesser || r.Phase != "playing" || !r.Skips {
+			return 403, "Overslaan kan nu niet."
 		}
-		available := []Question{}
-		for _, q := range s.questions {
-			if !used[q.ID] {
-				available = append(available, q)
-			}
+		if len(r.Revealed) > 0 {
+			return 409, "Na een Bluf! ligt de vraag vast."
 		}
-		if len(available) == 0 {
-			return 409, "Alle vragen zijn gespeeld."
-		}
-		q := available[pick(len(available))]
-		r.Question = &q
-		r.Used = append(r.Used, q.ID)
-		r.Roles = map[string]string{}
-		r.Revealed = map[string]bool{}
-		r.Kept = map[string]bool{}
-		others := []string{}
-		for _, p := range r.Players {
-			if p.ID != guesser {
-				others = append(others, p.ID)
-				r.Roles[p.ID] = "red"
-			}
-		}
-		r.Roles[others[pick(len(others))]] = "blue"
-		r.Phase = "playing"
-		r.Result = ""
-		r.Gains = nil
+		// The skipped question stays in Used so it never comes back.
+		return s.deal(r, guesser)
 	case "keep", "reveal", "bank":
 		if r.Revealed == nil {
 			r.Revealed = map[string]bool{}
@@ -728,6 +715,39 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 	default:
 		return 400, "Onbekende actie."
 	}
+	return 200, ""
+}
+func (s *Server) deal(r *Room, guesser string) (int, string) {
+	used := map[string]bool{}
+	for _, id := range r.Used {
+		used[id] = true
+	}
+	available := []Question{}
+	for _, q := range s.questions {
+		if !used[q.ID] {
+			available = append(available, q)
+		}
+	}
+	if len(available) == 0 {
+		return 409, "Alle vragen zijn gespeeld."
+	}
+	q := available[pick(len(available))]
+	r.Question = &q
+	r.Used = append(r.Used, q.ID)
+	r.Roles = map[string]string{}
+	r.Revealed = map[string]bool{}
+	r.Kept = map[string]bool{}
+	others := []string{}
+	for _, p := range r.Players {
+		if p.ID != guesser {
+			others = append(others, p.ID)
+			r.Roles[p.ID] = "red"
+		}
+	}
+	r.Roles[others[pick(len(others))]] = "blue"
+	r.Phase = "playing"
+	r.Result = ""
+	r.Gains = nil
 	return 200, ""
 }
 func redCount(r Room) int {

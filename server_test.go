@@ -150,3 +150,50 @@ func TestConfigureTurnsRange(t *testing.T) {
 		}
 	}
 }
+func TestSkipQuestion(t *testing.T) {
+	s := setup(t)
+	cs, v := table(t, s)
+	allow := func(c string, on bool) (int, map[string]any) {
+		b, _ := json.Marshal(Command{ID: random(12), Action: "allow-skips", Skips: on, Version: int(v["version"].(float64))})
+		st, x, _ := req(t, s, c, "/api/command", string(b))
+		return st, x
+	}
+	if st, x := allow(cs[0], true); st != 200 || x["skips"] != true {
+		t.Fatal(st, x)
+	} else {
+		v = x
+	}
+	_, v = cmd(t, s, cs[0], v, "start", "")
+	status, v := cmd(t, s, cs[0], v, "deal", "")
+	if status != 200 {
+		t.Fatal(status, v)
+	}
+	if st, x := allow(cs[0], false); st != 200 || x["skips"] != false {
+		t.Fatal(st, x)
+	} else {
+		v = x
+	}
+	if st, _ := cmd(t, s, cs[0], v, "skip", ""); st != 403 {
+		t.Fatal("skip while off", st)
+	}
+	if st, _ := allow(cs[1], true); st != 403 {
+		t.Fatal("non-host toggle", st)
+	}
+	_, v = allow(cs[0], true)
+	if st, _ := cmd(t, s, cs[1], v, "skip", ""); st != 403 {
+		t.Fatal("non-guesser skip", st)
+	}
+	_, other, _ := req(t, s, cs[1], "/api/state", "")
+	_, v = cmd(t, s, cs[0], v, "keep", other["me"].(string))
+	before := v["question"]
+	status, v = cmd(t, s, cs[0], v, "skip", "")
+	if status != 200 || v["phase"] != "playing" || v["question"] == before || v["turn"] != float64(0) || len(v["kept"].(map[string]any)) != 0 {
+		t.Fatal(status, v)
+	}
+	_, v = cmd(t, s, cs[0], v, "reveal", other["me"].(string))
+	if v["phase"] == "playing" {
+		if st, _ := cmd(t, s, cs[0], v, "skip", ""); st != 409 {
+			t.Fatal("skip after reveal", st)
+		}
+	}
+}

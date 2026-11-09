@@ -20,6 +20,7 @@ type State = {
   turn: number;
   turns: number;
   totalTurns: number;
+  skips?: boolean;
   question?: string;
   category?: string;
   answer?: string;
@@ -37,7 +38,7 @@ type Intent = {
   id: string;
   action: string;
   version: number;
-  [key: string]: string | number;
+  [key: string]: string | number | boolean;
 };
 const pendingKey = "bluffery.pending.v1";
 function getPending(): Intent | null {
@@ -185,6 +186,7 @@ const icons = {
   close: "M6 6l12 12M18 6 6 18",
   plus: "M12 5v14M5 12h14",
   minus: "M5 12h14",
+  refresh: "M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5",
 };
 const maxTurns = 5;
 function App() {
@@ -397,7 +399,10 @@ function App() {
       if (alive.current) setBusy(false);
     }
   }
-  function action(action: string, extra: Record<string, string | number> = {}) {
+  function action(
+    action: string,
+    extra: Record<string, string | number | boolean> = {},
+  ) {
     if (pending) {
       setError("Bevestig eerst de bewaarde actie.");
       return;
@@ -498,6 +503,24 @@ function App() {
   const effectiveTurns = state
     ? sentTurns || state.turns || (state.players.length <= 5 ? 2 : 1)
     : 0;
+  const skipsOn =
+    busy && pending?.action === "allow-skips"
+      ? !!pending.skips
+      : !!state?.skips;
+  const skipToggle = (
+    <div className="stepper">
+      <label htmlFor="skips">Vragen overslaan</label>
+      <button
+        id="skips"
+        type="button"
+        role="switch"
+        className="switch"
+        aria-checked={skipsOn}
+        disabled={disabled}
+        onClick={() => action("allow-skips", { skips: !skipsOn })}
+      />
+    </div>
+  );
   function setTurns(n: number) {
     setTurnsDraft(null);
     if (!state || !Number.isInteger(n)) return;
@@ -803,6 +826,7 @@ function App() {
                 <Icon d={icons.plus} size={18} />
               </button>
             </div>
+            {skipToggle}
             <button
               className={"btn" + (busy && state.players.length >= 4 ? " loading" : "")}
               aria-busy={busy && state.players.length >= 4}
@@ -867,7 +891,19 @@ function App() {
         {gameBar}
         {notices}
         <section className="question">
-          <span className="chip">{state.category}</span>
+          <div className="question-head">
+            <span className="chip">{state.category}</span>
+            {state.skips && revealedIds.length === 0 && (
+              <button
+                className="skip"
+                disabled={disabled}
+                onClick={() => action("skip")}
+              >
+                <Icon d={icons.refresh} size={14} />
+                Andere vraag
+              </button>
+            )}
+          </div>
           <h1>{state.question}</h1>
         </section>
         <div className="pot">
@@ -981,7 +1017,7 @@ function App() {
         </div>
         {notices}
         <p className="role-question">{state.question}</p>
-        <div className="role-stage">
+        <div className="role-stage" key={state.question}>
           <div
             className={
               "role-face" + (caught && memo.fresh.has(state.me) ? " fresh" : "")
@@ -1206,19 +1242,22 @@ function App() {
               </button>
             </div>
             {sheet === "stand" ? (
-              <ol className="standings">
-                {sorted.map((p, i) => (
-                  <li key={p.id}>
-                    <span className="rank">{i + 1}</span>
-                    <span className="who">
-                      {p.name}
-                      {p.id === state?.guesser &&
-                        state?.phase !== "finished" && <small>raadt nu</small>}
-                    </span>
-                    <span className="score">{p.score}</span>
-                  </li>
-                ))}
-              </ol>
+              <>
+                <ol className="standings">
+                  {sorted.map((p, i) => (
+                    <li key={p.id}>
+                      <span className="rank">{i + 1}</span>
+                      <span className="who">
+                        {p.name}
+                        {p.id === state?.guesser &&
+                          state?.phase !== "finished" && <small>raadt nu</small>}
+                      </span>
+                      <span className="score">{p.score}</span>
+                    </li>
+                  ))}
+                </ol>
+                {host && state?.phase !== "finished" && skipToggle}
+              </>
             ) : (
               <>
                 <ul className="rules">
@@ -1253,6 +1292,13 @@ function App() {
                       is alleen een notitie voor jezelf.
                     </span>
                   </li>
+                  {state?.skips && (
+                    <li>
+                      <span>
+                        <b>Andere vraag</b> kan tot de eerste Bluf!
+                      </span>
+                    </li>
+                  )}
                 </ul>
                 <h3>Installeren</h3>
                 {install && (

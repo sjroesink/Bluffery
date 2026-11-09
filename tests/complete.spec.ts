@@ -184,3 +184,50 @@ test("corrupt persisted intent fails closed without overwriting uncertain action
     await page.evaluate(() => localStorage.getItem("bluffery.pending.v1")),
   ).toBe("null");
 });
+
+test("host allows skipping and the guesser swaps the question until the first Bluf!", async ({
+  browser,
+}) => {
+  const ctx = await Promise.all(
+    [0, 1, 2, 3].map(() =>
+      browser.newContext({ viewport: { width: 320, height: 760 } }),
+    ),
+  );
+  const pages = await Promise.all(ctx.map((c) => c.newPage()));
+  try {
+    await pages[0].goto("/");
+    await pages[0].getByLabel("Je naam").fill("Host");
+    await pages[0].getByRole("button", { name: "Nieuwe tafel" }).click();
+    const code = await pages[0].getByTestId("room-code").innerText();
+    for (let i = 1; i < 4; i++) {
+      await pages[i].goto("/?code=" + code);
+      await pages[i].getByLabel("Je naam").fill("Speler " + i);
+      await pages[i].getByRole("button", { name: "Doe mee" }).click();
+      await expect(pages[i].getByText("Wachten op de host")).toBeVisible();
+    }
+    const toggle = pages[0].getByRole("switch", { name: "Vragen overslaan" });
+    await expect(toggle).toHaveAttribute("aria-checked", "false");
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-checked", "true");
+    await pages[0].getByRole("button", { name: "Start", exact: true }).click();
+    await pages[0].getByRole("button", { name: "Uitdelen", exact: true }).click();
+    const question = pages[0].locator(".question h1");
+    const first = await question.innerText();
+    await expect(pages[1].locator(".role-question")).toHaveText(first);
+    await pages[0].getByRole("button", { name: "Andere vraag" }).click();
+    await expect(question).not.toHaveText(first);
+    const second = await question.innerText();
+    await expect(pages[1].locator(".role-question")).toHaveText(second);
+    await expect(pages[1].getByTestId("private-answer")).toBeVisible();
+    await pages[0]
+      .locator(".suspect")
+      .first()
+      .getByRole("button", { name: /^(Bluf!|\+1 bonus) / })
+      .click();
+    await expect(
+      pages[0].getByRole("button", { name: "Andere vraag" }),
+    ).toHaveCount(0);
+  } finally {
+    await Promise.all(ctx.map((c) => c.close()));
+  }
+});
