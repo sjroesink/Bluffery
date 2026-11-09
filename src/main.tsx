@@ -493,8 +493,10 @@ function App() {
   const sorted = state
     ? [...state.players].sort((a, b) => b.score - a.score)
     : [];
+  const sentTurns =
+    busy && pending?.action === "configure" ? Number(pending.turns) : 0;
   const effectiveTurns = state
-    ? state.turns || (state.players.length <= 5 ? 2 : 1)
+    ? sentTurns || state.turns || (state.players.length <= 5 ? 2 : 1)
     : 0;
   function setTurns(n: number) {
     setTurnsDraft(null);
@@ -600,7 +602,8 @@ function App() {
           {error}
         </div>
       )}
-      {pending && (
+      {/* While the request is in flight the buttons show it; this only appears once it failed. */}
+      {pending && !busy && (
         <div className="notice">
           Actie nog niet bevestigd.
           <button
@@ -801,7 +804,8 @@ function App() {
               </button>
             </div>
             <button
-              className="btn"
+              className={"btn" + (busy && state.players.length >= 4 ? " loading" : "")}
+              aria-busy={busy && state.players.length >= 4}
               disabled={disabled || state.players.length < 4}
               onClick={() => action("start")}
             >

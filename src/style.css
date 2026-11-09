@@ -205,6 +205,39 @@ ol {
 .btn:disabled {
   opacity: 0.45;
 }
+/* In flight: keep the button solid and swap the label for a spinner after a short grace period. */
+.btn.loading {
+  position: relative;
+  opacity: 1;
+  cursor: progress;
+  color: transparent;
+  transition: color 0s 0.15s;
+}
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--ink);
+  border-right-color: transparent;
+  opacity: 0;
+  animation:
+    appear 0.2s 0.15s forwards,
+    spin 0.7s linear infinite;
+}
+@keyframes appear {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes spin {
+  to {
+    rotate: 360deg;
+  }
+}
 .btn.ghost {
   background: transparent;
   color: var(--text);

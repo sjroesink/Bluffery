@@ -154,9 +154,10 @@ test("lost create response survives reload and exact retry does not create twice
   const s = await (await page.request.get("/api/state")).json();
   expect(s.version).toBe(1);
   expect(s.players).toHaveLength(1);
-  expect(
-    await page.evaluate(() => localStorage.getItem("bluffery.pending.v1")),
-  ).toBeNull();
+  // The notice hides while the retry is in flight; the cleared intent marks its confirmation.
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem("bluffery.pending.v1")))
+    .toBeNull();
 });
 
 test("corrupt persisted intent fails closed without overwriting uncertain action", async ({
