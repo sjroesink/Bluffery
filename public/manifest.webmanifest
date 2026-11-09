@@ -1,14 +1,14 @@
 {
   "id": "/",
-  "name": "Vissig — sterke verhalen",
-  "short_name": "Vissig",
-  "description": "Eén waarheid. Een tafel vol sterke verhalen. Voor 4–10 spelers aan één tafel.",
+  "name": "Bluffery",
+  "short_name": "Bluffery",
+  "description": "Eén waarheid. De rest blufft. Voor 4–10 spelers aan één tafel.",
   "lang": "nl",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f5f2e9",
-  "theme_color": "#123f3b",
+  "background_color": "#14112b",
+  "theme_color": "#14112b",
   "icons": [
     {
       "src": "/icon-192.png",

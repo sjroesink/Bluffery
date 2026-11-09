@@ -102,7 +102,7 @@ func main() {
 	}
 	if len(os.Args) > 1 && os.Args[1] == "catalog" {
 		if len(os.Args) != 3 {
-			log.Fatal("usage: vissig catalog path.json")
+			log.Fatal("usage: bluffery catalog path.json")
 		}
 		if e := catalogCommand(os.Args[2]); e != nil {
 			log.Fatal(e)
@@ -114,7 +114,7 @@ func main() {
 	if e != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Path != "" && u.Path != "/") {
 		log.Fatal("PUBLIC_BASE_URL must be an exact http(s) origin")
 	}
-	fixtures := os.Getenv("VISSIG_DEV_FIXTURES") == "1"
+	fixtures := os.Getenv("BLUFFERY_DEV_FIXTURES") == "1"
 	if fixtures && !fixtureSafe(origin, env("LISTEN_ADDR", ":8080")) {
 		log.Fatal("development fixtures allowed only on loopback origins")
 	}
@@ -143,7 +143,7 @@ func main() {
 		defer cancel()
 		server.Shutdown(ctx)
 	}()
-	fmt.Printf("Vissig listening on %s (fixtures=%v, catalog=%d)\n", server.Addr, fixtures, len(s.questions))
+	fmt.Printf("Bluffery listening on %s (fixtures=%v, catalog=%d)\n", server.Addr, fixtures, len(s.questions))
 	if e = server.ListenAndServe(); e != nil && e != http.ErrServerClosed {
 		log.Fatal(e)
 	}

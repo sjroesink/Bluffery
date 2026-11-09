@@ -23,6 +23,9 @@ import (
 	"unicode/utf8"
 )
 
+// maxTurns caps turns per player; with 10 players this already needs 50 unused questions.
+const maxTurns = 5
+
 type Player struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
@@ -77,7 +80,7 @@ func openServer(dir, origin string, fixtures bool) (*Server, error) {
 	if e := os.Chmod(dir, 0700); e != nil {
 		return nil, e
 	}
-	p := filepath.Join(dir, "vissig.sqlite")
+	p := filepath.Join(dir, "bluffery.sqlite")
 	f, e := os.OpenFile(p, os.O_CREATE|os.O_RDWR, 0600)
 	if e != nil {
 		return nil, e
@@ -153,7 +156,7 @@ var idRE = regexp.MustCompile(`^[a-zA-Z0-9_-]{8,80}$`)
 var codeRE = regexp.MustCompile(`^[A-F0-9]{6}$`)
 
 func (s *Server) session(r *http.Request) string {
-	c, e := r.Cookie("vissig")
+	c, e := r.Cookie("bluffery")
 	if e != nil || len(c.Value) != 64 {
 		return ""
 	}
@@ -248,12 +251,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Cloudflare-CDN-Cache-Control", "no-store")
 	if r.Method != "GET" && (r.Header.Get("Origin") != s.origin || r.Header.Get("Sec-Fetch-Site") == "cross-site") {
-		fail(w, 403, "Alleen vanuit Vissig toegestaan.")
+		fail(w, 403, "Alleen vanuit Bluffery toegestaan.")
 		return
 	}
 	if r.URL.Path == "/api/session" && r.Method == "GET" {
 		if r.Header.Get("Sec-Fetch-Site") == "cross-site" || (r.Header.Get("Origin") != "" && r.Header.Get("Origin") != s.origin) {
-			fail(w, 403, "Alleen vanuit Vissig toegestaan.")
+			fail(w, 403, "Alleen vanuit Bluffery toegestaan.")
 			return
 		}
 		if s.session(r) == "" {
@@ -280,7 +283,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				fail(w, 503, "Opslag tijdelijk niet beschikbaar.")
 				return
 			}
-			http.SetCookie(w, &http.Cookie{Name: "vissig", Value: token, Path: "/", HttpOnly: true, Secure: strings.HasPrefix(s.origin, "https://"), SameSite: http.SameSiteStrictMode, MaxAge: 86400 * 7})
+			http.SetCookie(w, &http.Cookie{Name: "bluffery", Value: token, Path: "/", HttpOnly: true, Secure: strings.HasPrefix(s.origin, "https://"), SameSite: http.SameSiteStrictMode, MaxAge: 86400 * 7})
 		}
 		io.WriteString(w, `{"ok":true}`)
 		return
@@ -551,8 +554,8 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 		if !host || r.Phase != "lobby" {
 			return 403, "Alleen de host in de lobby."
 		}
-		if c.Turns != 1 && c.Turns != 2 {
-			return 400, "Kies 1 of 2 beurten."
+		if c.Turns < 1 || c.Turns > maxTurns {
+			return 400, fmt.Sprintf("Kies 1 tot en met %d beurten.", maxTurns)
 		}
 		r.Turns = c.Turns
 	case "remove":
@@ -624,7 +627,7 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 			}
 		}
 		if target == "" || target == guesser || r.Revealed[target] {
-			return 409, "Kies een vis die nog dicht ligt."
+			return 409, "Kies iemand die nog niet is omgedraaid."
 		}
 		if c.Action == "keep" {
 			r.Kept[target] = !r.Kept[target]

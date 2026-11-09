@@ -130,7 +130,7 @@ func loadCatalog(fixtures bool) ([]Question, error) {
 		}
 	}
 	if len(qs) == 0 {
-		return nil, fmt.Errorf("approved catalog empty: import vetted content before production; VISSIG_DEV_FIXTURES=1 is local test only")
+		return nil, fmt.Errorf("approved catalog empty: import vetted content before production; BLUFFERY_DEV_FIXTURES=1 is local test only")
 	}
 	return qs, nil
 }

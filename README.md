@@ -1,4 +1,4 @@
-# Vissig
+# Bluffery
 
 Onafhankelijk Nederlands tafelspel voor 4–10 spelers. Go + SQLite, React/TypeScript/Vite, eigen illustraties en PWA. `PRODUCT.md` is het productcontract. Geen runtime-LLM, externe fonts, trackers of uitgeversmateriaal.
 
@@ -15,12 +15,12 @@ npm ci
 npm run build
 go test -race ./...
 go vet ./...
-CGO_ENABLED=0 go build -trimpath -o ./vissig .
+CGO_ENABLED=0 go build -trimpath -o ./bluffery .
 LISTEN_ADDR=127.0.0.1:18088 DATA_DIR=./data \
-  PUBLIC_BASE_URL=http://127.0.0.1:18088 VISSIG_DEV_FIXTURES=1 ./vissig
+  PUBLIC_BASE_URL=http://127.0.0.1:18088 BLUFFERY_DEV_FIXTURES=1 ./bluffery
 ```
 
-Open `http://127.0.0.1:18088` in vier aparte browserprofielen/contexten. Tabbladen in hetzelfde browserprofiel delen bewust één speler. De host sluit de lobby met Start; de huidige rader deelt uit. Antwoorden worden hardop verteld. `Goed / laten staan` is alleen een niet-onthullende notitie; `Fout / omdraaien` onthult één vis. De aparte bankknop stelt rode punten veilig. De oorspronkelijke risicopunten worden één keer server-side afgerekend, daarna zijn antwoord, alle rollen en bronnen zichtbaar. De rader sluit de beurt af; automatisch wisselende rader, eindstand en nieuw spel zijn ingebouwd.
+Open `http://127.0.0.1:18088` in vier aparte browserprofielen/contexten. Tabbladen in hetzelfde browserprofiel delen bewust één speler. De host sluit de lobby met Start; de huidige rader deelt uit. Antwoorden worden hardop verteld. Het vinkje (`Geloof ik`) is alleen een niet-onthullende notitie; `Bluf!` ontmaskert één speler. `Stop & pak` stelt de punten van ontmaskerde bluffers veilig. De oorspronkelijke risicopunten worden één keer server-side afgerekend, daarna zijn antwoord, alle rollen en bronnen zichtbaar. De rader sluit de beurt af; automatisch wisselende rader, eindstand en nieuw spel zijn ingebouwd.
 
 ## Runtimecontract
 
@@ -28,13 +28,13 @@ Open `http://127.0.0.1:18088` in vier aparte browserprofielen/contexten. Tabblad
 |---|---|---|
 | `LISTEN_ADDR` | `:8080` | Bindadres; voor fixtures expliciet loopback |
 | `DATA_DIR` | image: `/data`; lokaal: `./data` | Enige schrijfbare persistente map |
-| `PUBLIC_BASE_URL` | image: `https://vissig.roesink.dev`; lokaal: `http://localhost:8080` | Exacte vertrouwde Origin, geen pad/query |
+| `PUBLIC_BASE_URL` | image: `https://bluffery.roesink.dev`; lokaal: `http://localhost:8080` | Exacte vertrouwde Origin, geen pad/query |
 | `TRUSTED_PROXY_CIDRS` | leeg | Komma-gescheiden expliciete socket-peer CIDR's |
-| `VISSIG_DEV_FIXTURES` | uit | Alleen `1` activeert lokale fictieve kaarten |
+| `BLUFFERY_DEV_FIXTURES` | uit | Alleen `1` activeert lokale fictieve kaarten |
 
 Reverse proxy: behoud Host/Origin, geef de client-IP als één geldige `X-Forwarded-For` IP door en vertrouw alleen de expliciet ingestelde proxy-peer. Meerdere XFF-hops worden niet blind geïnterpreteerd. Zonder trusted CIDR telt het socketadres. Een groep van tien telefoons op dezelfde wifi past binnen de quota.
 
-`GET /healthz` en `/vissig healthcheck` controleren de SQLiteverbinding. Het scratch-runtime-image draait standaard als UID99:GID100, met ingebedde frontend en zonder shell of netwerkafhankelijkheden. De host moet de datavolume aan deze UID/GID geven. De applicatie dwingt map0700 en database/WAL/SHM0600 af en weigert bij onvoldoende rechten. Aanbevolen runtime: read-only rootfs, alleen `/data` schrijfbaar, capabilities weg, no-new-privileges en begrensde resources. Eén app-instance per datamap; geen multi-replica eventbus.
+`GET /healthz` en `/bluffery healthcheck` controleren de SQLiteverbinding. Het scratch-runtime-image draait standaard als UID99:GID100, met ingebedde frontend en zonder shell of netwerkafhankelijkheden. De host moet de datavolume aan deze UID/GID geven. De applicatie dwingt map0700 en database/WAL/SHM0600 af en weigert bij onvoldoende rechten. Aanbevolen runtime: read-only rootfs, alleen `/data` schrijfbaar, capabilities weg, no-new-privileges en begrensde resources. Eén app-instance per datamap; geen multi-replica eventbus.
 
 ## API en echte SSE
 
@@ -79,22 +79,22 @@ npm run build
 node --test scripts/catalog.test.mjs
 go test -race ./...
 go vet ./...
-go build -trimpath -o "$RUNNER_TEMP/vissig" .
-VISSIG_BINARY="$RUNNER_TEMP/vissig" node scripts/restart-smoke.mjs
+go build -trimpath -o "$RUNNER_TEMP/bluffery" .
+BLUFFERY_BINARY="$RUNNER_TEMP/bluffery" node scripts/restart-smoke.mjs
 npm exec playwright install --with-deps chromium
 # Start disposable backend in background; shell trap ruimt eigen PID op.
-LISTEN_ADDR=127.0.0.1:18088 DATA_DIR="$RUNNER_TEMP/vissig-data" \
-  PUBLIC_BASE_URL=http://127.0.0.1:18088 VISSIG_DEV_FIXTURES=1 \
-  "$RUNNER_TEMP/vissig" &
+LISTEN_ADDR=127.0.0.1:18088 DATA_DIR="$RUNNER_TEMP/bluffery-data" \
+  PUBLIC_BASE_URL=http://127.0.0.1:18088 BLUFFERY_DEV_FIXTURES=1 \
+  "$RUNNER_TEMP/bluffery" &
 APP_PID=$!
 trap 'kill "$APP_PID" 2>/dev/null || true' EXIT
 # Wacht begrensd op GET http://127.0.0.1:18088/healthz =200.
 E2E_BASE_URL=http://127.0.0.1:18088 npm run test:e2e
 npm audit --audit-level=high
-docker build -t vissig:candidate .
+docker build -t bluffery:candidate .
 ```
 
-Browserdefaults zijn portable: Playwright gebruikt zijn geïnstalleerde Chromium; optioneel `CHROMIUM_PATH` voor een lokale executable. `VISSIG_EVIDENCE_DIR` is optioneel (default `test-results/evidence`); `E2E_BASE_URL` default loopback18088. Tests gebruiken uitsluitend disposable fixturedata. De PWA waiting-updateproef gebruikt een expliciet gelabelde lokale proxy die alleen workerbytes verandert; de daadwerkelijke Go shell/API blijven upstream. Installability, geauthenticeerde cachegrens, native offline refresh en reconnect draaien rechtstreeks op de productie-Go-handler.
+Browserdefaults zijn portable: Playwright gebruikt zijn geïnstalleerde Chromium; optioneel `CHROMIUM_PATH` voor een lokale executable. `BLUFFERY_EVIDENCE_DIR` is optioneel (default `test-results/evidence`); `E2E_BASE_URL` default loopback18088. Tests gebruiken uitsluitend disposable fixturedata. De PWA waiting-updateproef gebruikt een expliciet gelabelde lokale proxy die alleen workerbytes verandert; de daadwerkelijke Go shell/API blijven upstream. Installability, geauthenticeerde cachegrens, native offline refresh en reconnect draaien rechtstreeks op de productie-Go-handler.
 
 ## Releasepoort
 

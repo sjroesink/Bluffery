@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-const evidence = process.env.VISSIG_EVIDENCE_DIR || "test-results/evidence";
+const evidence = process.env.BLUFFERY_EVIDENCE_DIR || "test-results/evidence";
 test("four independent phones finish a whole game through all risk endings", async ({
   browser,
 }) => {
@@ -17,20 +17,21 @@ test("four independent phones finish a whole game through all risk endings", asy
     for (let i = 1; i < 4; i++) {
       await pages[i].goto("/?code=" + code);
       await pages[i].getByLabel("Je naam").fill("Speler " + i);
-      await pages[i].getByRole("button", { name: "Schuif aan" }).click();
+      await pages[i].getByRole("button", { name: "Doe mee" }).click();
       await expect(pages[i].getByText("Wachten op de host")).toBeVisible();
     }
-    await expect(pages[0].getByText("4 / 10 spelers")).toBeVisible();
-    await pages[0].getByLabel("Beurten per persoon").selectOption("1");
+    await expect(pages[0].getByText("4 / 10", { exact: true })).toBeVisible();
+    await pages[0].getByRole("button", { name: "Minder beurten" }).click();
+    await expect(pages[0].getByLabel("Beurten per speler")).toHaveValue("1");
     await expect(
-      pages[0].getByRole("button", { name: "Start het spel" }),
+      pages[0].getByRole("button", { name: "Start", exact: true }),
     ).toBeEnabled();
-    await pages[0].getByRole("button", { name: "Start het spel" }).click();
+    await pages[0].getByRole("button", { name: "Start", exact: true }).click();
     let questions = new Set<string>();
     for (let turn = 0; turn < 4; turn++) {
       const p = pages[turn];
-      await p.getByRole("button", { name: "Visjes uitdelen" }).click();
-      await expect(p.getByText("Jij bent de rader")).toBeVisible();
+      await p.getByRole("button", { name: "Uitdelen", exact: true }).click();
+      await expect(p.getByTestId("pot")).toBeVisible();
       const st = await (await p.request.get("/api/state")).json();
       expect(questions.has(st.question)).toBe(false);
       questions.add(st.question);
@@ -45,30 +46,30 @@ test("four independent phones finish a whole game through all risk endings", asy
       }
       if (turn === 1) {
         await p
-          .getByTestId("fish-" + blue)
-          .getByRole("button", { name: "Fout / omdraaien" })
+          .getByTestId("suspect-" + blue)
+          .getByRole("button", { name: /^(Bluf!|\+1 bonus) / })
           .click();
         await expect(
-          p.getByRole("heading", { name: "Helaas. Blauwe vis." }),
+          p.getByRole("heading", { name: /was eerlijk$/ }),
         ).toBeVisible();
       } else if (turn === 2) {
         for (const id of [...reds, blue]) {
           await p
-            .getByTestId("fish-" + id)
-            .getByRole("button", { name: "Fout / omdraaien" })
+            .getByTestId("suspect-" + id)
+            .getByRole("button", { name: /^(Bluf!|\+1 bonus) / })
             .click();
         }
         await expect(
-          p.getByRole("heading", { name: "Alle bluffers gevangen!" }),
+          p.getByRole("heading", { name: "Allemaal ontmaskerd" }),
         ).toBeVisible();
       } else {
         if (turn === 3)
           await p
-            .getByTestId("fish-" + reds[0])
-            .getByRole("button", { name: "Fout / omdraaien" })
+            .getByTestId("suspect-" + reds[0])
+            .getByRole("button", { name: /^(Bluf!|\+1 bonus) / })
             .click();
-        await p.getByRole("button", { name: "Stop & punten pakken" }).click();
-        await expect(p.getByText("Veilig binnen")).toBeVisible();
+        await p.getByRole("button", { name: /^Stop & pak/ }).click();
+        await expect(p.getByRole("heading", { name: "Binnen" })).toBeVisible();
       }
       await expect(p.getByTestId("settled-answer")).toBeVisible();
       expect(
@@ -80,23 +81,18 @@ test("four independent phones finish a whole game through all risk endings", asy
     }
     for (const p of pages)
       await expect(
-        p.getByRole("heading", { name: "Boven water." }),
+        p.getByRole("heading", { name: / (wint|winnen)$/ }),
       ).toBeVisible();
-    await expect(
-      pages[0]
-        .locator(".scoreboard li")
-        .filter({ hasText: "Host" })
-        .locator("b small"),
-    ).toHaveText("punt");
+    await expect(pages[0].locator(".podium .step")).toHaveCount(3);
     await pages[0].screenshot({
       path: evidence + "/finished-320.png",
       fullPage: true,
     });
     await pages[0]
-      .getByRole("button", { name: "Nieuw spel met deze tafel" })
+      .getByRole("button", { name: "Nog een potje" })
       .click();
     await expect(
-      pages[0].getByRole("heading", { name: "De school is bijna compleet." }),
+      pages[0].getByRole("heading", { name: "Aan tafel" }),
     ).toBeVisible();
   } finally {
     await Promise.all(ctx.map((c) => c.close()));
@@ -122,7 +118,7 @@ test("lost create response survives reload and exact retry does not create twice
     page.getByRole("button", { name: "Dezelfde actie opnieuw proberen" }),
   ).toBeVisible();
   const pending = await page.evaluate(() =>
-    localStorage.getItem("vissig.pending.v1"),
+    localStorage.getItem("bluffery.pending.v1"),
   );
   expect(pending).toBeTruthy();
   await page.reload();
@@ -139,7 +135,7 @@ test("lost create response survives reload and exact retry does not create twice
   expect(s.version).toBe(1);
   expect(s.players).toHaveLength(1);
   expect(
-    await page.evaluate(() => localStorage.getItem("vissig.pending.v1")),
+    await page.evaluate(() => localStorage.getItem("bluffery.pending.v1")),
   ).toBeNull();
 });
 
@@ -147,7 +143,7 @@ test("corrupt persisted intent fails closed without overwriting uncertain action
   page,
 }) => {
   await page.goto("/");
-  await page.evaluate(() => localStorage.setItem("vissig.pending.v1", "null"));
+  await page.evaluate(() => localStorage.setItem("bluffery.pending.v1", "null"));
   await Promise.all([
     page.waitForResponse((r) => r.url().endsWith("/api/state")),
     page.reload(),
@@ -164,6 +160,6 @@ test("corrupt persisted intent fails closed without overwriting uncertain action
     page.getByRole("button", { name: "Nieuwe tafel" }),
   ).toBeDisabled();
   expect(
-    await page.evaluate(() => localStorage.getItem("vissig.pending.v1")),
+    await page.evaluate(() => localStorage.getItem("bluffery.pending.v1")),
   ).toBe("null");
 });

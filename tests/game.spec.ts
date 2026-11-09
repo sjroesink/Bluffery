@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-const evidence = process.env.VISSIG_EVIDENCE_DIR || "test-results/evidence";
+const evidence = process.env.BLUFFERY_EVIDENCE_DIR || "test-results/evidence";
 test("four phones play, hide answers from owner-guesser, rotate and resume", async ({
   browser,
 }) => {
@@ -18,13 +18,13 @@ test("four phones play, hide answers from owner-guesser, rotate and resume", asy
     for (let i = 1; i < 4; i++) {
       await pages[i].goto("/?code=" + code);
       await pages[i].getByLabel("Je naam").fill(["", "Sam", "Mila", "Bo"][i]);
-      await pages[i].getByRole("button", { name: "Schuif aan" }).click();
+      await pages[i].getByRole("button", { name: "Doe mee" }).click();
       await expect(pages[i].getByText("Wachten op de host")).toBeVisible();
     }
-    await expect(pages[0].getByText("4 / 10 spelers")).toBeVisible();
-    await pages[0].getByRole("button", { name: "Start het spel" }).click();
-    await pages[0].getByRole("button", { name: "Visjes uitdelen" }).click();
-    await expect(pages[0].getByText("Jij bent de rader")).toBeVisible();
+    await expect(pages[0].getByText("4 / 10", { exact: true })).toBeVisible();
+    await pages[0].getByRole("button", { name: "Start", exact: true }).click();
+    await pages[0].getByRole("button", { name: "Uitdelen", exact: true }).click();
+    await expect(pages[0].getByTestId("pot")).toBeVisible();
     const state = await (await pages[0].request.get("/api/state")).json();
     expect(state.answer).toBeUndefined();
     expect(state.roles).toBeUndefined();
@@ -39,33 +39,35 @@ test("four phones play, hide answers from owner-guesser, rotate and resume", asy
       expect(v.roles).toBeUndefined();
     }
     await pages[0]
-      .getByTestId("fish-" + red)
-      .getByRole("button", { name: "Goed / laten staan" })
+      .getByTestId("suspect-" + red)
+      .getByRole("button", { name: "Geloof ik" })
       .click();
-    await expect(pages[0].getByTestId("fish-" + red)).toContainText(
-      "Laten staan",
-    );
+    await expect(
+      pages[0]
+        .getByTestId("suspect-" + red)
+        .getByRole("button", { name: "Geloof ik" }),
+    ).toHaveAttribute("aria-pressed", "true");
     await pages[0]
-      .getByTestId("fish-" + red)
-      .getByRole("button", { name: "Fout / omdraaien" })
+      .getByTestId("suspect-" + red)
+      .getByRole("button", { name: /^(Bluf!|\+1 bonus) / })
       .click();
-    await expect(pages[0].getByText("1 punt op het spel")).toBeVisible();
+    await expect(pages[0].getByTestId("pot")).toHaveText("1");
     await pages[0].screenshot({
       path: evidence + "/round-mobile.png",
       fullPage: true,
     });
     await pages[0].reload();
-    await expect(pages[0].getByText("1 punt op het spel")).toBeVisible();
+    await expect(pages[0].getByTestId("pot")).toHaveText("1");
     await pages[0]
-      .getByRole("button", { name: "Stop & punten pakken" })
+      .getByRole("button", { name: /^Stop & pak/ })
       .click();
-    await expect(pages[0].getByText("Veilig binnen")).toBeVisible();
+    await expect(pages[0].getByRole("heading", { name: "Binnen" })).toBeVisible();
     await expect(pages[0].getByTestId("settled-answer")).toBeVisible();
     await pages[0].getByRole("button", { name: "Volgende beurt" }).click();
     await expect(
-      pages[1].getByRole("button", { name: "Visjes uitdelen" }),
+      pages[1].getByRole("button", { name: "Uitdelen", exact: true }),
     ).toBeVisible();
-    await pages[1].getByRole("button", { name: "Visjes uitdelen" }).click();
+    await pages[1].getByRole("button", { name: "Uitdelen", exact: true }).click();
     await expect(pages[0].getByTestId("private-answer")).toBeVisible();
     const owner = await (await pages[0].request.get("/api/state")).json();
     expect(owner.answer).toBeTruthy();

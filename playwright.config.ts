@@ -1,6 +1,6 @@
 import { defineConfig } from "@playwright/test";
 import { join } from "node:path";
-const evidence = process.env.VISSIG_EVIDENCE_DIR || "test-results/evidence";
+const evidence = process.env.BLUFFERY_EVIDENCE_DIR || "test-results/evidence";
 export default defineConfig({
   testDir: "./tests",
   workers: 1,

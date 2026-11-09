@@ -1,4 +1,4 @@
-module vissig
+module bluffery
 
 go 1.27.1
 

@@ -34,7 +34,7 @@ type Intent = {
   version: number;
   [key: string]: string | number;
 };
-const pendingKey = "vissig.pending.v1";
+const pendingKey = "bluffery.pending.v1";
 function getPending(): Intent | null {
   try {
     const raw = localStorage.getItem(pendingKey);
@@ -54,27 +54,134 @@ function getPending(): Intent | null {
     );
   }
 }
-function Fish({ blue = false }: { blue?: boolean }) {
+type FaceProps = {
+  fill?: string;
+  eye?: string;
+  pupil?: string;
+  look?: number;
+  size?: number;
+  squint?: boolean;
+  shifty?: boolean;
+  mouth?: "smirk" | "sly" | "grin" | "flat";
+  mouthColor?: string;
+  className?: string;
+};
+const mouths = {
+  smirk: "M17 35 Q 26 39 33 33",
+  sly: "M15 33 Q 25 38 34 30",
+  grin: "M14 31 Q 24 40 34 31",
+  flat: "M17 34 H 31",
+};
+function Face({
+  fill = "#3a3370",
+  eye = "#fff",
+  pupil = "#14112b",
+  look = 0,
+  size = 44,
+  squint = false,
+  shifty = false,
+  mouth,
+  mouthColor = "#14112b",
+  className = "",
+}: FaceProps) {
   return (
-    <svg className="fish-art" viewBox="0 0 180 100" aria-hidden="true">
-      <path
-        d="M134 49 173 19v62l-39-30C115 97 44 94 12 50 44 6 115 4 134 49Z"
-        fill={blue ? "#66bde8" : "#ef795d"}
-      />
-      <path
-        d="M63 20 86 6l17 16M64 79l24 15 15-16"
-        fill={blue ? "#2e82b1" : "#b44b36"}
-      />
-      <circle cx="43" cy="43" r="7" fill="#133f3b" />
-      <path
-        d="M110 30q-13 20 0 40"
-        stroke="#133f3b"
-        strokeWidth="4"
-        fill="none"
-      />
+    <svg
+      className={("face " + className).trim()}
+      width={size}
+      height={size}
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+    >
+      <rect x="2" y="2" width="44" height="44" rx="14" fill={fill} />
+      {squint ? (
+        <>
+          <path d="M10.5 21 Q 17 15 23.5 21 Q 17 24 10.5 21Z" fill={eye} />
+          <path d="M24.5 21 Q 31 15 37.5 21 Q 31 24 24.5 21Z" fill={eye} />
+          <circle cx="20" cy="20.5" r="2.4" fill={pupil} />
+          <circle cx="34" cy="20.5" r="2.4" fill={pupil} />
+        </>
+      ) : (
+        <>
+          <ellipse cx="17" cy="21" rx="6.5" ry="7.5" fill={eye} />
+          <ellipse cx="31" cy="21" rx="6.5" ry="7.5" fill={eye} />
+          <g className={shifty ? "shifty" : undefined}>
+            <circle cx={17 + look} cy="22" r="3.2" fill={pupil} />
+            <circle cx={31 + look} cy="22" r="3.2" fill={pupil} />
+          </g>
+        </>
+      )}
+      {mouth && (
+        <path
+          d={mouths[mouth]}
+          stroke={mouthColor}
+          strokeWidth="2.6"
+          fill="none"
+          strokeLinecap="round"
+        />
+      )}
     </svg>
   );
 }
+const faces = {
+  mark: { fill: "#ff8a3d", mouth: "smirk" },
+  bluffer: { fill: "#14112b", squint: true, mouth: "sly", mouthColor: "#fff" },
+  truth: {
+    fill: "#fff",
+    eye: "#3b5bf5",
+    pupil: "#fff",
+    mouth: "flat",
+    mouthColor: "#3b5bf5",
+  },
+  red: { fill: "#ff8a3d" },
+  blue: { fill: "#3b5bf5" },
+  light: { fill: "#f6f3ff", eye: "#14112b", pupil: "#f6f3ff" },
+  winner: { fill: "#ff8a3d", squint: true, mouth: "grin" },
+} satisfies Record<string, FaceProps>;
+function lookFor(id: string) {
+  let n = 0;
+  for (const c of id) n += c.charCodeAt(0);
+  return [-3, 0, 3][n % 3];
+}
+function Confetti({ big = false }: { big?: boolean }) {
+  return (
+    <span className={"burst" + (big ? " big" : "")} aria-hidden="true">
+      {Array.from({ length: 12 }, (_, i) => (
+        <span key={i} className="cf" />
+      ))}
+    </span>
+  );
+}
+function Icon({ d, size = 20 }: { d: string; size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d={d} />
+    </svg>
+  );
+}
+const icons = {
+  trophy:
+    "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3",
+  check: "M5 12.5l4.5 4.5L19 7.5",
+  share: "M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M7 8l5-5 5 5",
+  lock: "M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2ZM8 11V7a4 4 0 0 1 8 0v4",
+  eye: "M2 12c1-2.5 5-7 10-7s9 4.5 10 7c-1 2.5-5 7-10 7S3 14.5 2 12ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6",
+  eyeOff:
+    "M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7a12 12 0 0 1-3 4.1M6.6 6.6A12 12 0 0 0 2 12c1 2.5 5 7 10 7a10 10 0 0 0 4.4-1M9.9 9.9a3 3 0 0 0 4.2 4.2",
+  close: "M6 6l12 12M18 6 6 18",
+  plus: "M12 5v14M5 12h14",
+  minus: "M5 12h14",
+};
+const maxTurns = 5;
 function App() {
   const [state, setState] = useState<State | null>(null),
     [name, setName] = useState(""),
@@ -195,9 +302,9 @@ function App() {
   useEffect(() => {
     if (!state?.code) return;
     QRCode.toDataURL(`${location.origin}/?code=${state.code}`, {
-      width: 220,
+      width: 256,
       margin: 2,
-      color: { dark: "#123f3b", light: "#fffdf5" },
+      color: { dark: "#14112b", light: "#ffffff" },
     })
       .then(setQr)
       .catch(() => setQr(""));
@@ -309,619 +416,894 @@ function App() {
     guesser = state?.guesser === state?.me;
   const who = (id?: string) =>
     state?.players.find((p) => p.id === id)?.name || "de rader";
-  return (
+  const [sheet, setSheet] = useState<"help" | "stand" | null>(null),
+    [outcome, setOutcome] = useState<string | null>(null),
+    [veiled, setVeiled] = useState(false),
+    [copied, setCopied] = useState(false),
+    [turnsDraft, setTurnsDraft] = useState<string | null>(null);
+  const prevPhase = useRef<string | undefined>(undefined),
+    reveals = useRef({
+      key: "",
+      known: new Set<string>(),
+      fresh: new Set<string>(),
+    });
+  useEffect(() => {
+    const prev = prevPhase.current;
+    prevPhase.current = state?.phase;
+    if (state?.phase !== "settled") {
+      setOutcome(null);
+      return;
+    }
+    if (prev !== "playing") return;
+    setOutcome(state.result || "bank");
+    const t = setTimeout(() => setOutcome(null), 2800);
+    return () => clearTimeout(t);
+  }, [state?.phase, state?.turn]);
+  useEffect(() => setVeiled(false), [state?.turn, state?.phase]);
+  const theme =
+    state?.phase === "playing" && !guesser && state.role
+      ? state.role === "blue"
+        ? "theme-blue"
+        : "theme-red"
+      : "";
+  useEffect(() => {
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute(
+        "content",
+        theme === "theme-red"
+          ? "#ff8a3d"
+          : theme === "theme-blue"
+            ? "#3b5bf5"
+            : "#14112b",
+      );
+  }, [theme]);
+
+  // Only reveals that happen while this screen is open get the big entrance;
+  // a reload mid-turn shows earlier reveals at rest.
+  const revealed = state?.revealed || {};
+  const revealedIds = Object.keys(revealed);
+  const memo = reveals.current;
+  const turnKey = state ? `${state.code}:${state.turn}` : "";
+  if (memo.key !== turnKey || revealedIds.length === 0) {
+    memo.key = turnKey;
+    memo.known = new Set(revealedIds);
+    memo.fresh = new Set();
+  } else
+    for (const id of revealedIds)
+      if (!memo.known.has(id)) {
+        memo.known.add(id);
+        memo.fresh.add(id);
+      }
+
+  const others = state
+    ? state.players.filter((p) => p.id !== state.guesser)
+    : [];
+  const redsTotal = Math.max(0, others.length - 1);
+  const redsCaught = revealedIds.filter((id) => revealed[id] === "red").length;
+  const freshReds = [...memo.fresh].filter(
+    (id) => revealed[id] === "red",
+  ).length;
+  const allRedsCaught = redsTotal > 0 && redsCaught === redsTotal;
+  const sorted = state
+    ? [...state.players].sort((a, b) => b.score - a.score)
+    : [];
+  const effectiveTurns = state
+    ? state.turns || (state.players.length <= 5 ? 2 : 1)
+    : 0;
+  function setTurns(n: number) {
+    setTurnsDraft(null);
+    if (!state || !Number.isInteger(n)) return;
+    const turns = Math.min(maxTurns, Math.max(1, n));
+    if (turns !== state.turns) action("configure", { turns });
+  }
+  const blueName = state?.roles
+    ? state.players.find((p) => state.roles?.[p.id] === "blue")?.name
+    : undefined;
+  const outcomeText =
+    state?.result === "bust"
+      ? `${blueName || "Iemand"} was eerlijk`
+      : state?.result === "last-blue"
+        ? "Allemaal ontmaskerd"
+        : "Binnen";
+  const guesserGain = (state && state.gains?.[state.guesser]) || 0;
+  const shareUrl = state ? `${location.origin}/?code=${state.code}` : "";
+  async function share() {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "Bluffery", url: shareUrl });
+        return;
+      }
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1600);
+    } catch (e) {
+      if ((e as Error).name !== "AbortError")
+        setError("Delen lukt niet. Laat de QR-code scannen.");
+    }
+  }
+  const helpButton = (
+    <button
+      className="icon-btn"
+      aria-label="Spelregels"
+      onClick={() => setSheet("help")}
+    >
+      ?
+    </button>
+  );
+  const brandBar = (
+    <div className="topbar">
+      <Face {...faces.mark} size={32} look={3} />
+      <span className="wordmark">bluffery</span>
+      {helpButton}
+    </div>
+  );
+  const gameBar = state && (
+    <div className="topbar">
+      <Face {...faces.mark} size={32} look={3} />
+      <div className="progress">
+        <span>
+          Beurt {Math.min(state.turn + 1, state.totalTurns)} /{" "}
+          {state.totalTurns}
+        </span>
+        <div className="progress-track">
+          <span
+            style={{
+              width: `${(Math.min(state.turn + 1, state.totalTurns) / Math.max(1, state.totalTurns)) * 100}%`,
+            }}
+          />
+        </div>
+      </div>
+      <button
+        className="icon-btn"
+        aria-label="Stand"
+        onClick={() => setSheet("stand")}
+      >
+        <Icon d={icons.trophy} />
+      </button>
+      {helpButton}
+    </div>
+  );
+  const notices = (
     <>
-      <header>
-        <a className="brand" href="/" aria-label="Vissig start">
-          <span className="brand-fish">◒</span> vissig
-          <span className="brand-dot">.</span>
-        </a>
-        <span className="header-note">STERKE VERHALEN. SLECHTE LEUGENS.</span>
-        <details className="help">
-          <summary>Spel & app</summary>
-          <div className="help-panel">
-            <h2>Zo speel je</h2>
-            <p>
-              Speel met 4–10 mensen aan één tafel. Eén rader, één blauwe
-              waarheidsvis en verder rode bluffers. Antwoorden vertel je hardop,
-              niet op je telefoon.
-            </p>
-            <p>
-              De rader draait met <b>Fout</b> één vis om. Elke rode vis is één
-              voorlopig punt. Stop om die punten veilig te stellen. Blauw te
-              vroeg? Alle voorlopige raderpunten vervallen. Blauw als laatste?
-              Eén bonuspunt.
-            </p>
-            <p>
-              Niet-omgedraaide rode vissen krijgen elk één punt. Blauw krijgt
-              alleen een punt als die te vroeg is omgedraaid. <b>Goed</b> is
-              alleen een geheugensteuntje, geen onthulling of punt.
-            </p>
-            <h3>Installeren</h3>
-            {install && (
+      {state && online && !streamConnected && !lost && (
+        <div className="notice" role="status">
+          Verbinding herstellen…
+        </div>
+      )}
+      {!online && (
+        <div role="status" className="notice">
+          <b>Je bent offline.</b> Internet is nodig om te spelen.
+        </div>
+      )}
+      {waiting && (
+        <div className="notice" role="status">
+          Nieuwe versie klaar.
+          <button
+            disabled={busy || !!pending || !online}
+            onClick={() => {
+              opted.current = true;
+              waiting.postMessage({ type: "ACTIVATE" });
+            }}
+          >
+            Nu bijwerken
+          </button>
+        </div>
+      )}
+      {error && (
+        <div role="alert" className="error">
+          {error}
+        </div>
+      )}
+      {pending && (
+        <div className="notice">
+          Actie nog niet bevestigd.
+          <button
+            disabled={busy || !online}
+            onClick={() => void send(pending)}
+          >
+            Dezelfde actie opnieuw proberen
+          </button>
+        </div>
+      )}
+    </>
+  );
+
+  let screen: React.ReactNode;
+  if (!state) {
+    screen = (
+      <>
+        <div className="topbar">
+          <span className="grow" />
+          {helpButton}
+        </div>
+        {notices}
+        <div className="hero">
+          <Face {...faces.mark} size={112} className="mark-bob" shifty />
+          <h1>bluffery</h1>
+          <p>Eén waarheid. De rest blufft.</p>
+        </div>
+        <form
+          className="start-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!disabled)
+              action("join", { name: name.trim(), code: code.toUpperCase() });
+          }}
+        >
+          <div className="name-block">
+            <label className="field-label" htmlFor="name">
+              Je naam
+            </label>
+            <input
+              id="name"
+              className="field name-field"
+              autoComplete="nickname"
+              maxLength={24}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="choices">
+            <button
+              type="button"
+              className="btn"
+              disabled={disabled || !name.trim()}
+              onClick={() => action("create", { name: name.trim() })}
+            >
+              Nieuwe tafel
+            </button>
+            <div className="divider">of</div>
+            <div className="join-row">
+              <label className="sr-only" htmlFor="code">
+                Tafelcode
+              </label>
+              <input
+                id="code"
+                className="field code-field"
+                value={code}
+                onChange={(e) => setCode(e.target.value.toUpperCase())}
+                maxLength={6}
+                autoCapitalize="characters"
+                autoComplete="off"
+                placeholder="Tafelcode"
+                pattern="[A-F0-9]{6}"
+              />
               <button
-                onClick={() => {
-                  void install.prompt();
-                  setInstall(null);
-                }}
+                className="btn"
+                disabled={
+                  disabled || !name.trim() || !/^[A-F0-9]{6}$/.test(code)
+                }
               >
-                Installeer Vissig
+                Doe mee
               </button>
+            </div>
+          </div>
+        </form>
+      </>
+    );
+  } else if (state.phase === "lobby") {
+    screen = (
+      <>
+        {brandBar}
+        {notices}
+        <section className="share">
+          {qr && (
+            <img
+              className="qr"
+              src={qr}
+              width="128"
+              height="128"
+              alt={`QR-code om mee te doen aan tafel ${state.code}`}
+            />
+          )}
+          <div className="share-info">
+            <span className="field-label">Tafelcode</span>
+            <span className="room-code" data-testid="room-code">
+              {state.code}
+            </span>
+            <button
+              className="btn small"
+              data-share-url={shareUrl}
+              onClick={() => void share()}
+            >
+              <Icon d={copied ? icons.check : icons.share} size={18} />
+              {copied ? "Gekopieerd" : "Delen"}
+            </button>
+          </div>
+        </section>
+        <section className="grow" style={{ display: "grid", gap: 14, alignContent: "start" }}>
+          <div className="section-head">
+            <h1>Aan tafel</h1>
+            <span>{state.players.length} / 10</span>
+          </div>
+          <ul className="players">
+            {state.players.map((p, i) => (
+              <li
+                className="player"
+                key={p.id}
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <Face
+                  {...(p.id === state.host ? faces.red : {})}
+                  look={lookFor(p.id)}
+                  size={48}
+                />
+                <b>{p.name}</b>
+                {p.id === state.host && <span className="badge">host</span>}
+                {host && p.id !== state.host && (
+                  <button
+                    className="remove"
+                    disabled={disabled}
+                    aria-label={`${p.name} verwijderen`}
+                    onClick={() => action("remove", { target: p.id })}
+                  >
+                    <span>
+                      <Icon d={icons.close} size={14} />
+                    </span>
+                  </button>
+                )}
+              </li>
+            ))}
+            {state.players.length < 10 && (
+              <li className="seat" aria-hidden="true">
+                <Icon d={icons.plus} size={26} />
+              </li>
             )}
-            <p>
-              iPhone/iPad: open in Safari, tik op Delen en kies ‘Zet op
-              beginscherm’. Op Android gebruik je ‘App installeren’ in het
-              browsermenu als dat beschikbaar is.
-            </p>
-            <h3>Privacy</h3>
-            <p>
-              Je naam en spel horen bij deze kamer. Je privésessie verloopt na 7
-              dagen; kamers verlopen 7 dagen na de laatste spelactie. Verlopen
-              gegevens worden bij nieuwe sessies opgeruimd. De
-              privé-browsercookie staat niet in de deelcode. Voor
-              misbruikpreventie bewaren we tijdelijk gehashte netwerkadressen.
-              Geen advertenties, trackers of externe lettertypen. Wis geen
-              sitegegevens als je wilt terugkeren: zonder cookie is herstel niet
-              mogelijk.
-            </p>
-            <p>
-              Onafhankelijk spel, met eigen vormgeving en vragen. Geen officiële
-              uitgeversapp.
-            </p>
-          </div>
-        </details>
-      </header>
-      <main>
-        {state && online && !streamConnected && !lost && (
-          <section className="notice" role="status">
-            Liveverbinding herstellen… Je plek blijft bewaard.
-          </section>
-        )}
-        {!online && (
-          <section role="status" className="notice">
-            <b>Je bent offline.</b> Internet is nodig om te spelen. Je browser
-            bewaart je plek; zodra de verbinding terug is halen we de stand op.
-          </section>
-        )}
-        {waiting && (
-          <section className="notice" role="status">
-            Een nieuwe versie staat klaar. Werk liever tussen twee beurten bij.{" "}
+          </ul>
+        </section>
+        {host ? (
+          <>
+            <div className="stepper">
+              <label htmlFor="turns">Beurten per speler</label>
+              <button
+                type="button"
+                aria-label="Minder beurten"
+                disabled={disabled || effectiveTurns <= 1}
+                onClick={() => setTurns(effectiveTurns - 1)}
+              >
+                <Icon d={icons.minus} size={18} />
+              </button>
+              <input
+                id="turns"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={maxTurns}
+                value={turnsDraft ?? String(effectiveTurns)}
+                disabled={disabled}
+                onChange={(e) => setTurnsDraft(e.target.value)}
+                onBlur={() =>
+                  turnsDraft !== null && setTurns(parseInt(turnsDraft, 10))
+                }
+                onKeyDown={(e) =>
+                  e.key === "Enter" && (e.target as HTMLInputElement).blur()
+                }
+              />
+              <button
+                type="button"
+                aria-label="Meer beurten"
+                disabled={disabled || effectiveTurns >= maxTurns}
+                onClick={() => setTurns(effectiveTurns + 1)}
+              >
+                <Icon d={icons.plus} size={18} />
+              </button>
+            </div>
             <button
-              disabled={busy || !!pending || !online}
-              onClick={() => {
-                opted.current = true;
-                waiting.postMessage({ type: "ACTIVATE" });
-              }}
+              className="btn"
+              disabled={disabled || state.players.length < 4}
+              onClick={() => action("start")}
             >
-              Nu bijwerken
+              {state.players.length < 4
+                ? `Nog ${4 - state.players.length} nodig`
+                : "Start"}
             </button>
-          </section>
+          </>
+        ) : (
+          <p className="waiting">Wachten op de host</p>
         )}
-        {error && (
-          <div role="alert" className="error">
-            {error}
-          </div>
-        )}
-        {pending && (
-          <section className="notice">
-            Deze actie is nog niet bevestigd. Opnieuw proberen voert hem nooit
-            dubbel uit.
-            <button
-              disabled={busy || !online}
-              onClick={() => void send(pending)}
-            >
-              Dezelfde actie opnieuw proberen
-            </button>
-          </section>
-        )}
-        {!state ? (
-          <div className="welcome-grid">
-            <section className="intro">
-              <div className="eyebrow">
-                HET SPEL WAAR IEDEREEN IETS UIT Z'N DUIМ ZUIGT
-              </div>
-              <h1>
-                Er klopt hier
-                <br />
-                iets <em>niet.</em>
-              </h1>
-              <p className="lead">
-                Eén waarheid. Een tafel vol sterke verhalen.
-                <br />
-                Haal jij de bluffers boven water?
-              </p>
-              <div className="school">
-                <Fish />
-                <Fish blue />
-              </div>
-              <div className="chips">
-                <span>4–10 spelers</span>
-                <span>Iedereen een telefoon</span>
-                <span>Gewoon hardop</span>
-              </div>
-            </section>
-            <section className="card join-card">
-              <div className="eyebrow">SCHUIF MAAR AAN</div>
-              <h2>Een visje wagen?</h2>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!disabled)
-                    action("join", {
-                      name: name.trim(),
-                      code: code.toUpperCase(),
-                    });
+      </>
+    );
+  } else if (state.phase === "ready") {
+    screen = (
+      <>
+        {gameBar}
+        {notices}
+        <div className="center-stage">
+          <div className="fan" aria-hidden="true">
+            {others.map((p, i) => (
+              <div
+                className="fan-card"
+                key={p.id}
+                style={{
+                  transform: `rotate(${(i - (others.length - 1) / 2) * (others.length > 5 ? 9 : 12)}deg)`,
                 }}
               >
-                <label htmlFor="name">Je naam</label>
-                <input
-                  id="name"
-                  autoComplete="nickname"
-                  maxLength={24}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Zo noemen ze je aan tafel"
-                  required
+                <Face
+                  fill="transparent"
+                  eye="#f6f3ff"
+                  look={lookFor(p.id)}
+                  size={44}
                 />
-                <button
-                  type="button"
-                  className="primary"
-                  disabled={disabled || !name.trim()}
-                  onClick={() => action("create", { name: name.trim() })}
-                >
-                  Nieuwe tafel <span>↗</span>
-                </button>
-                <div className="divider">of sluit aan met een code</div>
-                <label htmlFor="code">Kamercode</label>
-                <input
-                  id="code"
-                  className="code-input"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value.toUpperCase())}
-                  maxLength={6}
-                  autoCapitalize="characters"
-                  autoComplete="off"
-                  placeholder="ABC123"
-                  pattern="[A-F0-9]{6}"
-                />
-                <button
-                  className="secondary"
-                  disabled={
-                    disabled || !name.trim() || !/^[A-F0-9]{6}$/.test(code)
-                  }
-                >
-                  Schuif aan
-                </button>
-              </form>
-              <p className="small">
-                Geen account. Wel samen aan tafel.
-                <br />
-                De lobby sluit zodra het spel begint.
-              </p>
-            </section>
-          </div>
-        ) : (
-          <>
-            <div className="room-heading">
-              <div>
-                <div className="eyebrow">
-                  TAFEL <span data-testid="room-code">{state.code}</span>
-                </div>
-                <h1>
-                  {state.phase === "lobby"
-                    ? "De school is bijna compleet."
-                    : state.phase === "finished"
-                      ? "Boven water."
-                      : `Beurt ${state.turn + 1} van ${state.totalTurns}`}
-                </h1>
               </div>
-              <span className="pill">Jij: {who(state.me)}</span>
-            </div>
-            {state.phase === "lobby" ? (
-              <div className="game-grid">
-                <section className="card">
-                  <div className="section-head">
-                    <h2>Wie schuiven aan?</h2>
-                    <span>{state.players.length} / 10 spelers</span>
+            ))}
+          </div>
+          <div>
+            <h1>{guesser ? "Jij raadt" : `${who(state.guesser)} raadt`}</h1>
+            <p>{others.length} verhalen. 1 is waar.</p>
+          </div>
+        </div>
+        {guesser ? (
+          <button
+            className="btn nudge"
+            disabled={disabled}
+            onClick={() => action("deal")}
+          >
+            Uitdelen
+          </button>
+        ) : (
+          <p className="waiting">Wachten op uitdelen</p>
+        )}
+      </>
+    );
+  } else if (state.phase === "playing" && guesser) {
+    screen = (
+      <>
+        {gameBar}
+        {notices}
+        <section className="question">
+          <span className="chip">{state.category}</span>
+          <h1>{state.question}</h1>
+        </section>
+        <div className="pot">
+          <span className="pot-n" data-testid="pot">
+            {state.provisional ?? 0}
+          </span>
+          <span className="pot-label">op het spel</span>
+          <div className="pips" aria-hidden="true">
+            {Array.from({ length: redsTotal }, (_, i) => (
+              <span
+                key={i}
+                className={
+                  "pip" +
+                  (i < redsCaught
+                    ? " on" + (i >= redsCaught - freshReds ? " fresh" : "")
+                    : "")
+                }
+              />
+            ))}
+          </div>
+        </div>
+        <ul className="suspects grow">
+          {others.map((p) => {
+            const role = revealed[p.id],
+              fresh = memo.fresh.has(p.id),
+              kept = !!state.kept?.[p.id],
+              last = allRedsCaught && !role,
+              label = last ? "+1 bonus" : "Bluf!";
+            return (
+              <li
+                className="suspect"
+                key={p.id}
+                data-testid={"suspect-" + p.id}
+              >
+                {!role ? (
+                  <div className={"row" + (kept ? " kept" : "")}>
+                    <Face look={lookFor(p.id)} />
+                    <b>{p.name}</b>
+                    <button
+                      className="keep"
+                      aria-label={`Geloof ik: ${p.name}`}
+                      aria-pressed={kept}
+                      disabled={disabled}
+                      onClick={() => action("keep", { target: p.id })}
+                    >
+                      <Icon d={icons.check} />
+                    </button>
+                    <button
+                      className={"accuse" + (last ? " bonus" : "")}
+                      aria-label={`${label} ${p.name}`}
+                      disabled={disabled}
+                      onClick={() => action("reveal", { target: p.id })}
+                    >
+                      {label}
+                    </button>
                   </div>
-                  <ul className="player-list">
-                    {state.players.map((p, i) => (
-                      <li key={p.id}>
-                        <span className="avatar">
-                          {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <b>{p.name}</b>
-                        {p.id === state.host && (
-                          <span className="pill">host</span>
-                        )}
-                        {host && p.id !== state.host && (
-                          <button
-                            className="text-button"
-                            disabled={disabled}
-                            aria-label={`${p.name} verwijderen`}
-                            onClick={() => action("remove", { target: p.id })}
-                          >
-                            Verwijder
-                          </button>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                  <p className="small">
-                    4–10 spelers. Na de start kan niemand meer aansluiten of
-                    verwijderd worden. Verbinding kwijt? Open dit spel opnieuw
-                    in dezelfde browser.
-                  </p>
-                  {host ? (
-                    <>
-                      <label htmlFor="turns">Beurten per persoon</label>
-                      <select
-                        id="turns"
-                        value={state.turns}
-                        disabled={disabled}
-                        onChange={(e) =>
-                          action("configure", { turns: Number(e.target.value) })
-                        }
-                      >
-                        <option value={0} disabled>
-                          Automatisch: 2 bij 4–5 spelers, anders 1
-                        </option>
-                        <option value={1}>1 beurt</option>
-                        <option value={2}>2 beurten</option>
-                      </select>
-                      <button
-                        className="primary"
-                        disabled={disabled || state.players.length < 4}
-                        onClick={() => action("start")}
-                      >
-                        Start het spel
-                      </button>
-                    </>
+                ) : role === "red" ? (
+                  <div className={"row caught" + (fresh ? " fresh" : "")}>
+                    <Face {...faces.bluffer} />
+                    <b>{p.name}</b>
+                    <span className="stamp-wrap">
+                      <span className="stamp">Bluffer</span>
+                      {fresh && (
+                        <>
+                          <Confetti />
+                          <span className="plus" aria-hidden="true">
+                            +1
+                          </span>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                ) : (
+                  <div className={"row honest" + (fresh ? " fresh" : "")}>
+                    <Face {...faces.truth} />
+                    <b>{p.name}</b>
+                    <span className="row-tag">Eerlijk</span>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+        <button
+          className="btn ghost"
+          disabled={disabled}
+          onClick={() => action("bank")}
+        >
+          Stop &amp; pak {state.provisional ?? 0}
+        </button>
+      </>
+    );
+  } else if (state.phase === "playing") {
+    const red = state.role !== "blue",
+      caught = revealed[state.me] === "red";
+    screen = (
+      <>
+        <div className="role-top">
+          <span>
+            <Icon d={icons.lock} size={18} />
+            Alleen voor jou
+          </span>
+          <button
+            className="icon-btn"
+            aria-label="Antwoord verbergen"
+            aria-pressed={veiled}
+            onClick={() => setVeiled((v) => !v)}
+          >
+            <Icon d={veiled ? icons.eye : icons.eyeOff} />
+          </button>
+        </div>
+        {notices}
+        <p className="role-question">{state.question}</p>
+        <div className="role-stage">
+          <div
+            className={
+              "role-face" + (caught && memo.fresh.has(state.me) ? " fresh" : "")
+            }
+          >
+            {red ? (
+              <Face {...faces.bluffer} size={150} className="smug" />
+            ) : (
+              <Face {...faces.truth} size={150} className="steady" />
+            )}
+            {caught && (
+              <span className="stamp-wrap">
+                <span className="stamp">Betrapt</span>
+              </span>
+            )}
+          </div>
+          <h1>{red ? "Jij blufft" : "Jij bent eerlijk"}</h1>
+          <p>
+            {red ? "Verzin een ander antwoord." : "Zeg de waarheid. Klink verdacht."}
+          </p>
+        </div>
+        <div className={"answer" + (veiled ? " veiled" : "")}>
+          <span>{red ? "Niet zeggen" : "Het antwoord"}</span>
+          <strong data-testid="private-answer">{state.answer}</strong>
+        </div>
+      </>
+    );
+  } else if (state.phase === "settled") {
+    const rows = [...state.players].sort(
+      (a, b) =>
+        Number(b.id === state.guesser) - Number(a.id === state.guesser) ||
+        (state.gains?.[b.id] || 0) - (state.gains?.[a.id] || 0),
+    );
+    screen = (
+      <>
+        {gameBar}
+        {notices}
+        <h1 className="outcome-title">{outcomeText}</h1>
+        <section className="reveal-card">
+          <span>{state.question}</span>
+          <strong data-testid="settled-answer">{state.answer}</strong>
+          {state.explanation && <p>{state.explanation}</p>}
+          {!!state.sources?.length && (
+            <details>
+              <summary>Bronnen</summary>
+              <ul>
+                {state.sources.map((s, i) => (
+                  <li key={i}>
+                    <a href={s.url} rel="noreferrer" target="_blank">
+                      {s.publisher} · {s.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </section>
+        <ul className="results grow">
+          {rows.map((p, i) => {
+            const role = state.roles?.[p.id],
+              isGuesser = p.id === state.guesser,
+              gain = state.gains?.[p.id] || 0;
+            return (
+              <li
+                className="result"
+                key={p.id}
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <Face
+                  {...(isGuesser
+                    ? faces.light
+                    : role === "blue"
+                      ? faces.blue
+                      : faces.red)}
+                  look={lookFor(p.id)}
+                  size={40}
+                />
+                <span className="result-name">
+                  <b>{p.name}</b>
+                  {isGuesser ? (
+                    <span className="tag-rader">Rader</span>
+                  ) : role === "blue" ? (
+                    <span className="tag-blue">Eerlijk</span>
                   ) : (
-                    <p className="waiting">Wachten op de host</p>
+                    <span className="tag-red">
+                      Bluffer · {revealed[p.id] ? "betrapt" : "ontsnapt"}
+                    </span>
                   )}
-                </section>
-                <section className="card share-card">
-                  <div className="eyebrow">NEEM JE VRIENDEN MEE</div>
-                  <h2>Scan. Schuif aan.</h2>
-                  {qr && (
-                    <img
-                      className="qr"
-                      src={qr}
-                      width="220"
-                      height="220"
-                      alt={`QR-code om aan te sluiten bij tafel ${state.code}`}
+                </span>
+                <b className={"gain" + (gain ? "" : " zero")}>+{gain}</b>
+              </li>
+            );
+          })}
+        </ul>
+        {guesser ? (
+          <button
+            className="btn"
+            disabled={disabled}
+            onClick={() => action("next")}
+          >
+            Volgende beurt
+          </button>
+        ) : (
+          <p className="waiting">{who(state.guesser)} gaat verder</p>
+        )}
+      </>
+    );
+  } else {
+    const top = Math.max(...state.players.map((p) => p.score));
+    const winners = state.players.filter((p) => p.score === top);
+    const steps = [
+      { rank: 1, face: faces.light, height: 110 },
+      { rank: 0, face: faces.winner, height: 160 },
+      { rank: 2, face: faces.blue, height: 80 },
+    ];
+    screen = (
+      <>
+        <div className="rain" aria-hidden="true">
+          {Array.from({ length: 12 }, (_, i) => (
+            <span key={i} />
+          ))}
+        </div>
+        {brandBar}
+        {notices}
+        <h1 className="winner">
+          {winners.map((p) => p.name).join(" & ")}{" "}
+          {winners.length > 1 ? "winnen" : "wint"}
+        </h1>
+        <div className="podium">
+          {steps.map(({ rank, face, height }) => {
+            const p = sorted[rank];
+            if (!p) return <div key={rank} />;
+            return (
+              <div className={"step" + (rank === 0 ? " first" : "")} key={rank}>
+                {rank === 0 && (
+                  <svg
+                    className="crown"
+                    width="40"
+                    height="28"
+                    viewBox="0 0 40 28"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M3 24 L6 6 L14 15 L20 3 L26 15 L34 6 L37 24 Z"
+                      fill="#ffd08a"
+                      stroke="#ffd08a"
+                      strokeWidth="2"
+                      strokeLinejoin="round"
                     />
-                  )}
-                  <p className="big-code">{state.code}</p>
-                  <label htmlFor="share">
-                    Openbare deellink (geen privésleutel)
-                  </label>
-                  <input
-                    id="share"
-                    readOnly
-                    value={`${location.origin}/?code=${state.code}`}
-                    onFocus={(e) => e.target.select()}
-                  />
+                  </svg>
+                )}
+                <Face {...face} look={lookFor(p.id)} size={rank === 0 ? 76 : 56} />
+                <b>{p.name}</b>
+                <div
+                  className="block"
+                  style={{ height, animationDelay: `${[0, 150, 300][rank]}ms` }}
+                >
+                  <span>{p.score}</span>
+                  <span>{rank + 1}e</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <ol className="standings grow" start={4}>
+          {sorted.slice(3).map((p, i) => (
+            <li key={p.id}>
+              <span className="rank">{i + 4}</span>
+              <span className="who">{p.name}</span>
+              <span className="score">{p.score}</span>
+            </li>
+          ))}
+        </ol>
+        {host ? (
+          <button
+            className="btn"
+            disabled={disabled}
+            onClick={() => action("new-game")}
+          >
+            Nog een potje
+          </button>
+        ) : (
+          <p className="waiting">Wachten op de host</p>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <div className={"app " + theme}>
+      <main
+        className={
+          "wrap" +
+          (state?.phase === "finished" ? " finished" : "") +
+          (outcome === "bust" ? " shake" : "")
+        }
+      >
+        {screen}
+      </main>
+      {sheet && (
+        <div className="backdrop" onClick={() => setSheet(null)}>
+          <section
+            className="sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="sheet-title"
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.key === "Escape" && setSheet(null)}
+          >
+            <div className="sheet-head">
+              <h2 id="sheet-title">
+                {sheet === "help" ? "Zo speel je" : "Stand"}
+              </h2>
+              <button
+                className="icon-btn"
+                aria-label="Sluiten"
+                autoFocus
+                onClick={() => setSheet(null)}
+              >
+                <Icon d={icons.close} />
+              </button>
+            </div>
+            {sheet === "stand" ? (
+              <ol className="standings">
+                {sorted.map((p, i) => (
+                  <li key={p.id}>
+                    <span className="rank">{i + 1}</span>
+                    <span className="who">
+                      {p.name}
+                      {p.id === state?.guesser &&
+                        state?.phase !== "finished" && <small>raadt nu</small>}
+                    </span>
+                    <span className="score">{p.score}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <>
+                <ul className="rules">
+                  <li>
+                    <span>
+                      Eén speler <b>raadt</b>. De rest krijgt stiekem een rol:
+                      één is <b>eerlijk</b>, de anderen <b>bluffen</b>.
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      Iedereen geeft hardop een antwoord. Bluffers verzinnen
+                      er een.
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      <b>Bluf!</b> ontmaskert iemand. Elke bluffer is een punt
+                      in de pot. Stop wanneer je wilt en pak de pot.
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      Eerlijke speler te vroeg? Pot kwijt. Als laatste?{" "}
+                      <b>+1 bonus</b>.
+                    </span>
+                  </li>
+                  <li>
+                    <span>
+                      Elke bluffer die ontsnapt krijgt 1 punt. De eerlijke
+                      speler alleen als die te vroeg is ontmaskerd. Het vinkje
+                      is alleen een notitie voor jezelf.
+                    </span>
+                  </li>
+                </ul>
+                <h3>Installeren</h3>
+                {install && (
                   <button
-                    className="secondary"
+                    className="btn small"
                     onClick={() => {
-                      navigator.clipboard
-                        ?.writeText(`${location.origin}/?code=${state.code}`)
-                        .catch(() =>
-                          setError("Selecteer en kopieer de link hierboven."),
-                        );
+                      void install.prompt();
+                      setInstall(null);
                     }}
                   >
-                    Kopieer deellink
+                    Installeer Bluffery
                   </button>
-                </section>
-              </div>
-            ) : (
-              <div className="game-grid">
-                <div>
-                  {state.phase === "ready" && (
-                    <section className="card ready-card">
-                      <Fish blue />
-                      <div className="eyebrow">
-                        {guesser ? "JIJ BENT AAN ZET" : "VOLGENDE DUIK"}
-                      </div>
-                      <h2>
-                        {guesser
-                          ? "Klaar om te vissen?"
-                          : `${who(state.guesser)} gaat raden`}
-                      </h2>
-                      <p>
-                        De anderen krijgen één blauwe vis of een rode vis.
-                        Iedereen vertelt straks een antwoord aan tafel.
-                      </p>
-                      {guesser ? (
-                        <button
-                          className="primary"
-                          disabled={disabled}
-                          onClick={() => action("deal")}
-                        >
-                          Visjes uitdelen
-                        </button>
-                      ) : (
-                        <p className="waiting">
-                          Wachten tot de rader uitdeelt…
-                        </p>
-                      )}
-                    </section>
-                  )}
-                  {(state.phase === "playing" || state.phase === "settled") && (
-                    <>
-                      <section className="question-card">
-                        <div className="eyebrow">
-                          {state.category} · DE VRAAG
-                        </div>
-                        <h2>{state.question}</h2>
-                      </section>
-                      {state.phase === "playing" &&
-                        (guesser ? (
-                          <section className="card">
-                            <div className="eyebrow">Jij bent de rader</div>
-                            <h2>Wie klinkt er té overtuigend?</h2>
-                            <p>
-                              Laat iedereen een antwoord hardop geven. Draai
-                              rode vissen om, maar blijf van de blauwe af.
-                            </p>
-                            <div className="risk">
-                              <strong>
-                                {state.provisional}{" "}
-                                {state.provisional === 1 ? "punt" : "punten"} op
-                                het spel
-                              </strong>
-                              <span>Blauw te vroeg = alles kwijt</span>
-                            </div>
-                            <div className="fish-list">
-                              {state.players
-                                .filter((p) => p.id !== state.me)
-                                .map((p) => (
-                                  <article
-                                    className="suspect"
-                                    data-testid={"fish-" + p.id}
-                                    key={p.id}
-                                  >
-                                    <div className="section-head">
-                                      <h3>{p.name}</h3>
-                                      {state.revealed?.[p.id] ? (
-                                        <span
-                                          className={
-                                            "role " + state.revealed[p.id]
-                                          }
-                                        >
-                                          {state.revealed[p.id] === "red"
-                                            ? "Rood · bluffer"
-                                            : "Blauw · waarheid"}
-                                        </span>
-                                      ) : (
-                                        <span className="pill">
-                                          {state.kept?.[p.id]
-                                            ? "✓ Laten staan"
-                                            : "Nog dicht"}
-                                        </span>
-                                      )}
-                                    </div>
-                                    {!state.revealed?.[p.id] && (
-                                      <div className="fish-actions">
-                                        <button
-                                          className="reveal"
-                                          disabled={disabled}
-                                          onClick={() =>
-                                            action("reveal", { target: p.id })
-                                          }
-                                        >
-                                          Fout / omdraaien
-                                        </button>
-                                        <button
-                                          className="secondary"
-                                          disabled={disabled}
-                                          aria-pressed={!!state.kept?.[p.id]}
-                                          onClick={() =>
-                                            action("keep", { target: p.id })
-                                          }
-                                        >
-                                          Goed / laten staan
-                                        </button>
-                                      </div>
-                                    )}
-                                  </article>
-                                ))}
-                            </div>
-                            <p className="small">
-                              ‘Goed’ is alleen jouw notitie. Het onthult niets
-                              en levert geen punten op.
-                            </p>
-                            <button
-                              className="primary bank"
-                              disabled={disabled}
-                              onClick={() => action("bank")}
-                            >
-                              Stop & punten pakken
-                            </button>
-                          </section>
-                        ) : (
-                          <section
-                            className={"card private-card " + state.role}
-                          >
-                            <div className="eyebrow">
-                              ALLEEN VOOR JOU · HOUD JE SCHERM PRIVÉ
-                            </div>
-                            <Fish blue={state.role === "blue"} />
-                            <h2>
-                              {state.role === "blue"
-                                ? "Jij bent de blauwe vis."
-                                : "Jij bent een rode vis."}
-                            </h2>
-                            <p>
-                              {state.role === "blue"
-                                ? "Vertel de waarheid. Klink gerust een beetje verdacht."
-                                : "Verzin hardop een geloofwaardig ander antwoord. Laat je niet betrappen."}
-                            </p>
-                            <div className="answer-box">
-                              <span>Het echte antwoord</span>
-                              <strong data-testid="private-answer">
-                                {state.answer}
-                              </strong>
-                            </div>
-                            <p className="small">
-                              Wacht op de rader. Antwoorden vertel je aan tafel.
-                            </p>
-                          </section>
-                        ))}
-                      {state.phase === "settled" && (
-                        <section className="card">
-                          <div className="eyebrow">DE BEURT IS AFGELOPEN</div>
-                          <h2>
-                            {state.result === "bank"
-                              ? "Veilig binnen"
-                              : state.result === "bust"
-                                ? "Helaas. Blauwe vis."
-                                : "Alle bluffers gevangen!"}
-                          </h2>
-                          <p>
-                            {state.result === "bust"
-                              ? "Blauw te vroeg omgedraaid: de rader krijgt 0. Blauw krijgt 1, net als elke rode vis die nog dicht lag."
-                              : state.result === "last-blue"
-                                ? "Blauw als laatste: alle rode punten én één bonuspunt voor de rader."
-                                : "De rader krijgt de omgedraaide rode punten. Elke rode vis die nog dicht lag krijgt 1 punt; blauw krijgt 0."}
-                          </p>
-                          <div className="answer-box">
-                            <span>Het echte antwoord</span>
-                            <strong data-testid="settled-answer">
-                              {state.answer}
-                            </strong>
-                          </div>
-                          <p>{state.explanation}</p>
-                          <details>
-                            <summary>Bekijk de bronnen</summary>
-                            <ul>
-                              {state.sources?.map((s, i) => (
-                                <li key={i}>
-                                  <a
-                                    href={s.url}
-                                    rel="noreferrer"
-                                    target="_blank"
-                                  >
-                                    {s.publisher} · {s.title}
-                                  </a>
-                                </li>
-                              ))}
-                            </ul>
-                          </details>
-                          <ul className="settlement">
-                            {state.players.map((p) => (
-                              <li key={p.id}>
-                                <span>
-                                  {p.name}{" "}
-                                  <small>
-                                    {p.id === state.guesser
-                                      ? "rader"
-                                      : state.roles?.[p.id] === "blue"
-                                        ? "blauwe vis"
-                                        : "rode vis"}
-                                  </small>
-                                </span>
-                                <b>+{state.gains?.[p.id] || 0}</b>
-                              </li>
-                            ))}
-                          </ul>
-                          {guesser ? (
-                            <button
-                              className="primary"
-                              disabled={disabled}
-                              onClick={() => action("next")}
-                            >
-                              Volgende beurt
-                            </button>
-                          ) : (
-                            <p className="waiting">
-                              {who(state.guesser)} sluit de beurt af.
-                            </p>
-                          )}
-                        </section>
-                      )}
-                    </>
-                  )}
-                  {state.phase === "finished" && (
-                    <section className="card ready-card">
-                      <Fish blue />
-                      <div className="eyebrow">EINDE VAN HET SPEL</div>
-                      <h2>
-                        {[...state.players]
-                          .sort((a, b) => b.score - a.score)
-                          .filter(
-                            (p) =>
-                              p.score ===
-                              Math.max(...state.players.map((p) => p.score)),
-                          )
-                          .map((p) => p.name)
-                          .join(" & ")}{" "}
-                        {state.players.filter(
-                          (p) =>
-                            p.score ===
-                            Math.max(...state.players.map((p) => p.score)),
-                        ).length > 1
-                          ? "winnen!"
-                          : "wint!"}
-                      </h2>
-                      <p>
-                        De beste verhalen komen nog. Nog een potje? Eerdere
-                        vragen blijven in deze kamer uit de stapel.
-                      </p>
-                      {host && (
-                        <button
-                          className="primary"
-                          disabled={disabled}
-                          onClick={() => action("new-game")}
-                        >
-                          Nieuw spel met deze tafel
-                        </button>
-                      )}
-                    </section>
-                  )}
-                </div>
-                <aside className="card scoreboard">
-                  <div className="eyebrow">DE STAND</div>
-                  <h2>Wie zwemt voorop?</h2>
-                  <ol>
-                    {[...state.players]
-                      .sort((a, b) => b.score - a.score)
-                      .map((p, i) => (
-                        <li key={p.id}>
-                          <span className="rank">{i + 1}</span>
-                          <span>
-                            {p.name}
-                            {p.id === state.guesser &&
-                              state.phase !== "finished" && (
-                                <small>rader deze beurt</small>
-                              )}
-                          </span>
-                          <b>
-                            {p.score}
-                            <small>{p.score === 1 ? "punt" : "punten"}</small>
-                          </b>
-                        </li>
-                      ))}
-                  </ol>
-                  <p className="small">
-                    Punten worden pas aan het einde van een beurt definitief.
-                  </p>
-                </aside>
-              </div>
+                )}
+                <p>
+                  iPhone/iPad: Safari › Delen › Zet op beginscherm. Android:
+                  ‘App installeren’ in het browsermenu.
+                </p>
+                <h3>Privacy</h3>
+                <p>
+                  Geen account, advertenties, trackers of externe lettertypen.
+                  Je naam en spel horen bij deze tafel. Je sessie verloopt na 7
+                  dagen, een tafel 7 dagen na de laatste actie. Voor
+                  misbruikpreventie bewaren we tijdelijk gehashte
+                  netwerkadressen. De privécookie zit nooit in de deelcode;
+                  zonder die cookie kun je niet terugkeren.
+                </p>
+                <p>Onafhankelijk spel met eigen vormgeving en vragen.</p>
+              </>
             )}
-          </>
-        )}
-      </main>
-      <footer>
-        <span>
-          vissig. <b>Neem niet alles voor zoete vis aan.</b>
-        </span>
-        <span>Gemaakt om samen te spelen.</span>
-      </footer>
-    </>
+          </section>
+        </div>
+      )}
+      {outcome && state?.phase === "settled" && (
+        <>
+          {outcome === "bust" && <div className="flash" aria-hidden="true" />}
+          <div className="backdrop" onClick={() => setOutcome(null)}>
+            <section
+              className={
+                "sheet outcome " +
+                (outcome === "bust"
+                  ? "blue"
+                  : outcome === "last-blue"
+                    ? "red"
+                    : "light")
+              }
+              role="dialog"
+              aria-modal="true"
+              aria-label="Uitslag"
+            >
+              {outcome === "last-blue" && <Confetti big />}
+              <span className="outcome-n">
+                {outcome === "bust" ? "0" : "+" + guesserGain}
+              </span>
+              <span className="outcome-label">{outcomeText}</span>
+              <button
+                className={"btn " + (outcome === "bust" ? "light" : "ink")}
+                autoFocus
+                onClick={() => setOutcome(null)}
+              >
+                Verder
+              </button>
+            </section>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 createRoot(document.getElementById("root")!).render(<App />);

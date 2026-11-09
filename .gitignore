@@ -6,5 +6,5 @@ playwright-report/
 *.sqlite
 *.sqlite-wal
 *.sqlite-shm
-/vissig
+/bluffery
 .env

@@ -5,7 +5,7 @@ import { mkdtempSync, writeFileSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 test("catalog import dry-run generates IDs, validates and leaves production seed alone", () => {
-  const dir = mkdtempSync(join(tmpdir(), "vissig-catalog-"));
+  const dir = mkdtempSync(join(tmpdir(), "bluffery-catalog-"));
   try {
     const path = join(dir, "input.json");
     const q = {

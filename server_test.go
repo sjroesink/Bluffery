@@ -133,3 +133,20 @@ func TestCreateResume(t *testing.T) {
 		t.Fatal("answer leaked")
 	}
 }
+func TestConfigureTurnsRange(t *testing.T) {
+	s := setup(t)
+	cs, v := table(t, s)
+	for _, c := range []struct{ turns, status int }{{0, 400}, {6, 400}, {3, 200}, {maxTurns, 200}, {1, 200}} {
+		b, _ := json.Marshal(Command{ID: random(12), Action: "configure", Turns: c.turns, Version: int(v["version"].(float64))})
+		st, x, _ := req(t, s, cs[0], "/api/command", string(b))
+		if st != c.status {
+			t.Fatal(c.turns, st, x)
+		}
+		if st == 200 {
+			if x["turns"] != float64(c.turns) {
+				t.Fatal("turns not stored", c.turns, x)
+			}
+			v = x
+		}
+	}
+}

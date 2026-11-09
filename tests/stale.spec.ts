@@ -32,7 +32,7 @@ test("a delayed old SSE resync response cannot overwrite a newer revision", asyn
       },
     });
     expect(r.status()).toBe(200);
-    await expect(page.getByLabel("Beurten per persoon")).toHaveValue("1");
+    await expect(page.getByLabel("Beurten per speler")).toHaveValue("1");
     release();
     await page.evaluate(
       () =>
@@ -40,7 +40,7 @@ test("a delayed old SSE resync response cannot overwrite a newer revision", asyn
           requestAnimationFrame(() => requestAnimationFrame(() => r())),
         ),
     );
-    await expect(page.getByLabel("Beurten per persoon")).toHaveValue("1");
+    await expect(page.getByLabel("Beurten per speler")).toHaveValue("1");
     const s = await (await page.request.get("/api/state")).json();
     expect(s.version).toBe(2);
   } finally {

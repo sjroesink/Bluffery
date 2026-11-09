@@ -5,8 +5,8 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createServer } from "node:net";
 import { once } from "node:events";
-const binary = resolve(process.env.VISSIG_BINARY || "./vissig");
-const dir = await mkdtemp(join(tmpdir(), "vissig-restart-"));
+const binary = resolve(process.env.BLUFFERY_BINARY || "./bluffery");
+const dir = await mkdtemp(join(tmpdir(), "bluffery-restart-"));
 const reserve = createServer();
 reserve.listen(0, "127.0.0.1");
 await once(reserve, "listening");
@@ -22,7 +22,7 @@ async function start() {
       LISTEN_ADDR: `127.0.0.1:${port}`,
       PUBLIC_BASE_URL: base,
       DATA_DIR: dir,
-      VISSIG_DEV_FIXTURES: "1",
+      BLUFFERY_DEV_FIXTURES: "1",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

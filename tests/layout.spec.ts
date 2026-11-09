@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-const evidence = process.env.VISSIG_EVIDENCE_DIR || "test-results/evidence";
+const evidence = process.env.BLUFFERY_EVIDENCE_DIR || "test-results/evidence";
 test("original landing, QR and narrow controls render without overflow", async ({
   page,
 }) => {
@@ -7,7 +7,7 @@ test("original landing, QR and narrow controls render without overflow", async (
   for (const width of [320, 390, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(
-      page.getByRole("heading", { name: /Er klopt hier/ }),
+      page.getByRole("heading", { name: "bluffery" }),
     ).toBeVisible();
     expect(
       await page.evaluate(
@@ -23,13 +23,13 @@ test("original landing, QR and narrow controls render without overflow", async (
   await page.getByRole("button", { name: "Nieuwe tafel" }).click();
   await expect(page.locator("img.qr")).toBeVisible();
   const cookie = (await page.context().cookies()).find(
-    (c) => c.name === "vissig",
+    (c) => c.name === "bluffery",
   );
   expect(cookie?.httpOnly).toBe(true);
   expect(cookie?.sameSite).toBe("Strict");
-  const link = await page
-    .getByLabel("Openbare deellink (geen privésleutel)")
-    .inputValue();
+  const link = (await page
+    .getByRole("button", { name: "Delen" })
+    .getAttribute("data-share-url"))!;
   expect(link).not.toContain(cookie!.value);
   expect(new URL(link).searchParams.get("code")).toMatch(/^[A-F0-9]{6}$/);
   for (const width of [320, 390]) {
@@ -40,7 +40,7 @@ test("original landing, QR and narrow controls render without overflow", async (
       ),
     ).toBe(true);
   }
-  await page.getByText("Spel & app", { exact: true }).click();
+  await page.getByRole("button", { name: "Spelregels" }).click();
   await expect(page.getByRole("heading", { name: "Privacy" })).toBeVisible();
   expect(
     await page.evaluate(

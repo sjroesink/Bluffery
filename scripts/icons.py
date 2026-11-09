@@ -1,14 +1,32 @@
 #!/usr/bin/env python3
-"""Generate original opaque Vissig icons, no third-party assets."""
+"""Generate original opaque Bluffery icons, no third-party assets."""
 from PIL import Image, ImageDraw
 from pathlib import Path
-for filename,size in [('icon-192.png',192),('icon-512.png',512),('icon-maskable.png',512),('apple-touch-icon.png',180)]:
-    im=Image.new('RGB',(size,size),'#123f3b');d=ImageDraw.Draw(im)
-    def box(a):return tuple(round(x*size/512) for x in a)
-    d.ellipse(box((108,174,348,338)), fill='#ef795d')
-    d.polygon([box((320,256)),box((400,188)),box((400,324))],fill='#ef795d')
-    d.ellipse(box((155,218,177,240)),fill='#123f3b')
-    d.arc(box((242,192,320,320)),90,270,fill='#123f3b',width=max(2,size//65))
-    d.ellipse(box((162,114,185,137)),fill='#f5f2e9')
-    d.ellipse(box((193,80,207,94)),fill='#f5f2e9')
-    im.save(Path('public')/filename)
+
+INK = '#14112b'
+ORANGE = '#ff8a3d'
+WHITE = '#ffffff'
+SCALE = 4  # draw large, downsample for smooth edges
+
+for filename, size, face in [('icon-192.png', 192, .78), ('icon-512.png', 512, .78),
+                             ('icon-maskable.png', 512, .56), ('apple-touch-icon.png', 180, .72)]:
+    big = size * SCALE
+    im = Image.new('RGB', (big, big), INK)
+    d = ImageDraw.Draw(im)
+    side = big * face
+    ox = oy = (big - side) / 2
+    u = side / 44  # the mascot is drawn on a 44-unit grid, like the in-app face
+
+    def p(x, y):
+        return (ox + (x - 2) * u, oy + (y - 2) * u)
+
+    def box(cx, cy, rx, ry):
+        return [p(cx - rx, cy - ry), p(cx + rx, cy + ry)]
+
+    d.rounded_rectangle([p(2, 2), p(46, 46)], radius=14 * u, fill=ORANGE)
+    d.ellipse(box(17, 21, 6.5, 7.5), fill=WHITE)
+    d.ellipse(box(31, 21, 6.5, 7.5), fill=WHITE)
+    d.ellipse(box(20, 22, 3.2, 3.2), fill=INK)
+    d.ellipse(box(34, 22, 3.2, 3.2), fill=INK)
+    d.arc([p(17, 25), p(33, 38)], 40, 150, fill=INK, width=max(2, round(2.6 * u)))
+    im.resize((size, size), Image.LANCZOS).save(Path('public') / filename)

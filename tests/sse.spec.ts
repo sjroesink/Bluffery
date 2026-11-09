@@ -21,28 +21,28 @@ test("authenticated SSE updates four phones without periodic polling and resyncs
     for (let i = 1; i < 4; i++) {
       await pages[i].goto("/?code=" + code);
       await pages[i].getByLabel("Je naam").fill("SSE " + i);
-      await pages[i].getByRole("button", { name: "Schuif aan" }).click();
+      await pages[i].getByRole("button", { name: "Doe mee" }).click();
       await expect(pages[i].getByText("Wachten op de host")).toBeVisible();
     }
     await expect.poll(() => events.every((v) => v >= 1)).toBe(true);
-    await expect(pages[0].getByText("4 / 10 spelers")).toBeVisible();
+    await expect(pages[0].getByText("4 / 10", { exact: true })).toBeVisible();
     const initial = reads.slice();
     await new Promise((r) => setTimeout(r, 3200));
     expect(reads).toEqual(initial);
     const source = await readFile("src/main.tsx", "utf8");
     expect(source).not.toMatch(/setInterval\s*\(/);
-    await pages[0].getByRole("button", { name: "Start het spel" }).click();
-    await expect(pages[1].getByText("SSE Host gaat raden")).toBeVisible({
+    await pages[0].getByRole("button", { name: "Start", exact: true }).click();
+    await expect(pages[1].getByText("SSE Host raadt")).toBeVisible({
       timeout: 1200,
     });
-    await pages[0].getByRole("button", { name: "Visjes uitdelen" }).click();
+    await pages[0].getByRole("button", { name: "Uitdelen", exact: true }).click();
     for (let i = 1; i < 4; i++)
       await expect(pages[i].getByTestId("private-answer")).toBeVisible({
         timeout: 1200,
       });
     await ctx[3].setOffline(true);
     await pages[0]
-      .getByRole("button", { name: "Stop & punten pakken" })
+      .getByRole("button", { name: /^Stop & pak/ })
       .click();
     await expect(pages[1].getByTestId("settled-answer")).toBeVisible({
       timeout: 1200,

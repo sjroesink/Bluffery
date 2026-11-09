@@ -3,7 +3,7 @@ import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { createServer } from "node:http";
 const base = process.env.E2E_BASE_URL || "http://127.0.0.1:18088";
-const evidence = process.env.VISSIG_EVIDENCE_DIR || "test-results/evidence";
+const evidence = process.env.BLUFFERY_EVIDENCE_DIR || "test-results/evidence";
 test("production PWA: installability, authenticated cache boundary, native offline refresh and reconnect", async () => {
   await mkdir(evidence, { recursive: true });
   const profile = join(evidence, "pwa-profile-" + Date.now());
@@ -108,8 +108,8 @@ test("real waiting worker asks consent: only consenting tab reloads (public upda
         });
         res.end(
           upstream.replace(
-            /vissig-shell-([a-f0-9]+)/,
-            "vissig-shell-$1-test" + revision,
+            /bluffery-shell-([a-f0-9]+)/,
+            "bluffery-shell-$1-test" + revision,
           ),
         );
         return;
@@ -161,7 +161,7 @@ test("real waiting worker asks consent: only consenting tab reloads (public upda
     );
     const caches = await b.evaluate(() => window.caches.keys());
     expect(
-      caches.filter((k) => k.startsWith("vissig-shell-")).length,
+      caches.filter((k) => k.startsWith("bluffery-shell-")).length,
     ).toBeLessThanOrEqual(2);
   } finally {
     await ctx.close();

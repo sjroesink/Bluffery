@@ -15,14 +15,14 @@ RUN go mod download
 COPY *.go ./
 COPY internal ./internal
 COPY --from=web /app/dist ./dist
-RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /vissig .
+RUN CGO_ENABLED=0 go build -trimpath -ldflags='-s -w' -o /bluffery .
 RUN mkdir /data && chown 99:100 /data && chmod 0700 /data
 
 FROM scratch
-COPY --from=build /vissig /vissig
+COPY --from=build /bluffery /bluffery
 COPY --from=build --chown=99:100 /data /data
 USER 99:100
-ENV LISTEN_ADDR=:8080 DATA_DIR=/data PUBLIC_BASE_URL=https://vissig.roesink.dev
+ENV LISTEN_ADDR=:8080 DATA_DIR=/data PUBLIC_BASE_URL=https://bluffery.roesink.dev
 EXPOSE 8080
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/vissig", "healthcheck"]
-ENTRYPOINT ["/vissig"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD ["/bluffery", "healthcheck"]
+ENTRYPOINT ["/bluffery"]

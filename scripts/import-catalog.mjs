@@ -26,7 +26,7 @@ for (const q of input.questions) {
 }
 input.questions.sort((a, b) => a.id.localeCompare(b.id));
 const canonical = JSON.stringify(input, null, 2) + "\n";
-const dir = await mkdtemp(join(tmpdir(), "vissig-import-"));
+const dir = await mkdtemp(join(tmpdir(), "bluffery-import-"));
 try {
   const candidate = join(dir, "questions.json");
   await writeFile(candidate, canonical, { mode: 0o600 });

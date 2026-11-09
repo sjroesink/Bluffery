@@ -137,7 +137,7 @@ func TestPersistenceAndPrivateFiles(t *testing.T) {
 	cs, v := table(t, s)
 	_, v = cmd(t, s, cs[0], v, "start", "")
 	_, v = cmd(t, s, cs[0], v, "deal", "")
-	for _, name := range []string{"vissig.sqlite", "vissig.sqlite-wal", "vissig.sqlite-shm"} {
+	for _, name := range []string{"bluffery.sqlite", "bluffery.sqlite-wal", "bluffery.sqlite-shm"} {
 		info, e := os.Stat(filepath.Join(dir, name))
 		if e != nil || info.Mode().Perm() != 0600 {
 			t.Fatal(name, info, e)
