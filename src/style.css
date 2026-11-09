@@ -437,6 +437,15 @@ ol {
   font-size: 17px;
   padding: 0 20px;
 }
+.join-row.filled .code-field {
+  flex: 0 0 124px;
+  padding: 0 10px;
+}
+.join-row.filled .btn {
+  flex: 1 1 auto;
+  padding: 0 14px;
+  white-space: nowrap;
+}
 .choices .code-field {
   font-size: 20px;
   letter-spacing: 0.12em;

@@ -660,7 +660,7 @@ function App() {
                 <div className="divider">of</div>
               </>
             )}
-            <div className="join-row">
+            <div className={"join-row" + (code ? " filled" : "")}>
               <label className="sr-only" htmlFor="code">
                 Tafelcode
               </label>
