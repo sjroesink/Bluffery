@@ -44,10 +44,20 @@ jobs:
           go test -race ./...
           go vet ./...
           CGO_ENABLED=0 go build -trimpath -o "$RUNNER_TEMP/bluffery" .
-      - name: Production browser regression on disposable fixture
+      # The browser download can stall indefinitely; bound and retry it.
+      - name: Install Chromium for browser tests
+        timeout-minutes: 12
         run: |
           set -euo pipefail
-          npx playwright install --with-deps chromium
+          for attempt in 1 2 3; do
+            if timeout 180 npx playwright install --with-deps chromium; then exit 0; fi
+            printf 'Chromium install attempt %s stalled or failed; retrying.\n' "$attempt"
+          done
+          exit 1
+      - name: Production browser regression on disposable fixture
+        timeout-minutes: 15
+        run: |
+          set -euo pipefail
           fixture_dir="$(mktemp -d "$RUNNER_TEMP/bluffery-e2e.XXXXXX")"
           LISTEN_ADDR=127.0.0.1:18088 DATA_DIR="$fixture_dir" \
             PUBLIC_BASE_URL=http://127.0.0.1:18088 BLUFFERY_DEV_FIXTURES=1 \
