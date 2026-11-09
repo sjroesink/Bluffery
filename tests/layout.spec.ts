@@ -48,3 +48,18 @@ test("original landing, QR and narrow controls render without overflow", async (
     ),
   ).toBe(true);
 });
+
+test("joining via a QR code hides 'Nieuwe tafel' until the code is cleared", async ({
+  page,
+}) => {
+  await page.goto("/?code=ABC123");
+  await expect(page.getByLabel("Tafelcode")).toHaveValue("ABC123");
+  await expect(
+    page.getByRole("button", { name: "Nieuwe tafel" }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Doe mee" })).toBeVisible();
+  await page.getByLabel("Tafelcode").fill("");
+  await expect(
+    page.getByRole("button", { name: "Nieuwe tafel" }),
+  ).toBeVisible();
+});

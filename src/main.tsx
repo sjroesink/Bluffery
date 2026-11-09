@@ -646,15 +646,20 @@ function App() {
             />
           </div>
           <div className="choices">
-            <button
-              type="button"
-              className="btn"
-              disabled={disabled || !name.trim()}
-              onClick={() => action("create", { name: name.trim() })}
-            >
-              Nieuwe tafel
-            </button>
-            <div className="divider">of</div>
+            {/* Arriving with a code (QR link) means joining; creating only shows once the code is cleared. */}
+            {!code && (
+              <>
+                <button
+                  type="button"
+                  className="btn"
+                  disabled={disabled || !name.trim()}
+                  onClick={() => action("create", { name: name.trim() })}
+                >
+                  Nieuwe tafel
+                </button>
+                <div className="divider">of</div>
+              </>
+            )}
             <div className="join-row">
               <label className="sr-only" htmlFor="code">
                 Tafelcode
