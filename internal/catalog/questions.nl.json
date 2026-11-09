@@ -1,0 +1,1139 @@
+{
+  "schemaVersion": 1,
+  "questions": [
+    {
+      "id": "q_50b49671496fea2b64e41ced",
+      "question": "Welke Saturnusmaan heeft een opvallende bergketen die als een naad langs zijn evenaar loopt?",
+      "answer": "Iapetus",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Langs de evenaar van Iapetus loopt een bergrug met toppen van ongeveer tien kilometer hoog. Over de ontstaanswijze bestaan nog verschillende verklaringen.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/moons/iapetus/",
+          "title": "Iapetus - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_4053728e470d8817ccba13a0",
+      "question": "Welke letter draagt de Saturnusring die wordt aangevuld door de ijsfonteinen van Enceladus?",
+      "answer": "E",
+      "aliases": [
+        "E-ring"
+      ],
+      "category": "Ruimte",
+      "explanation": "De fonteinen van Enceladus schieten waterdamp en ijsdeeltjes de ruimte in. Een deel van dat materiaal verspreidt zich langs de baan en voedt Saturnus’ E-ring.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/moons/enceladus/",
+          "title": "Enceladus - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_68dc1776016487158f8b73a4",
+      "question": "Wat gebeurt er met het grootste deel van het materiaal dat Enceladus de ruimte in spuit?",
+      "answer": "Het valt als sneeuw terug",
+      "aliases": [
+        "Het valt terug op de maan"
+      ],
+      "category": "Ruimte",
+      "explanation": "Slechts een klein deel van het uitgestoten materiaal belandt in Saturnus’ E-ring. Het meeste komt als sneeuw terug op Enceladus en helpt het oppervlak helder houden.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/moons/enceladus/",
+          "title": "Enceladus - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_81505a1a4b8f8f15230e8153",
+      "question": "Welk gas geeft Uranus zijn blauwgroene kleur door rood licht te absorberen?",
+      "answer": "Methaan",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Methaan in de atmosfeer neemt het rode deel van het zonlicht op. Het licht dat vervolgens ontsnapt geeft Uranus zijn kenmerkende blauwgroene aanblik.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/uranus/facts/",
+          "title": "Uranus: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_4edef838ba5526a4422cdcb3",
+      "question": "Welke vorm krijgt de lange magnetische staart van Uranus door de gekantelde draaiing van de planeet?",
+      "answer": "Een kurkentrekker",
+      "aliases": [
+        "Een spiraal",
+        "Een schroefvorm"
+      ],
+      "category": "Ruimte",
+      "explanation": "Achter Uranus strekt de magnetische staart zich ver uit, van de zon af. Door de gekantelde rotatie worden de magnetische veldlijnen in een kurkentrekkerachtige vorm gedraaid.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/uranus/facts/",
+          "title": "Uranus: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_fa4174304917a5b26c994aad",
+      "question": "Op welke planeet kan de zon op sommige plekken opkomen, weer ondergaan en daarna opnieuw opkomen?",
+      "answer": "Mercurius",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Mercurius draait langzaam om zijn as en beweegt met wisselende snelheid door zijn elliptische baan. Daardoor kan de schijnbare beweging van de zon tijdelijk omkeren.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/mercury/facts/",
+          "title": "Mercury: Facts",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_c95827d2efc2790575f8a5be",
+      "question": "Welk deel van Mercurius heeft een straal van ongeveer 85 procent van de straal van de hele planeet?",
+      "answer": "De metalen kern",
+      "aliases": [
+        "De kern"
+      ],
+      "category": "Ruimte",
+      "explanation": "Mercurius bezit een uitzonderlijk grote metalen kern. Die heeft een straal van ongeveer 2.074 kilometer, terwijl de straal van de hele planeet circa 2.440 kilometer bedraagt.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/mercury/facts/",
+          "title": "Mercury: Facts",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_4162a9a47a15de764180f6d8",
+      "question": "Welke meetkundige vorm heeft de grote straalstroom rond de noordpool van Saturnus?",
+      "answer": "Een zeshoek",
+      "aliases": [
+        "Een hexagoon"
+      ],
+      "category": "Ruimte",
+      "explanation": "De noordpool van Saturnus heeft een golvende straalstroom met zes zijden. Het patroon is ongeveer dertigduizend kilometer breed en omringt een grote draaiende storm.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/facts/",
+          "title": "Saturn: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_b38895aa85369b51471aa23d",
+      "question": "Welk element komt diep binnen in Saturnus voor als een vloeistof met metaalachtige eigenschappen?",
+      "answer": "Waterstof",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Onder de buitenste lagen van Saturnus bevindt zich vloeibare metallische waterstof. Die omgeeft een centrale kern met onder meer metalen en gesteentemateriaal onder enorme druk.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/facts/",
+          "title": "Saturn: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_7517d3bb5ad0669954eeea87",
+      "question": "Welke kleur valt vaak op rond de ondergaande zon aan de hemel van Mars?",
+      "answer": "Blauw",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Fijn stof in de Marsatmosfeer laat blauw licht relatief goed doordringen. Daardoor kan juist rond de ondergaande zon een blauwe gloed verschijnen; de sterkte varieert met het stof.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/resource/mastcam-zs-first-martian-sunset/",
+          "title": "Mastcam-Z's First Martian Sunset - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_9e67331afe481413c1ca0ba2",
+      "question": "Welk gas vormt ongeveer 95 procent van de atmosfeer van Saturnusmaan Titan?",
+      "answer": "Stikstof",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "De dichte atmosfeer van Titan bestaat hoofdzakelijk uit stikstof, met daarnaast ongeveer vijf procent methaan. Daardoor verschilt dit mengsel sterk van de atmosfeer van Saturnus zelf.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/moons/titan/facts/",
+          "title": "Titan: Facts",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_ffcbbdb289a22b6d73b05f0c",
+      "question": "Van welk soort verbindingen zijn de donkere zandkorrels in de duinen van Titan gemaakt?",
+      "answer": "Koolwaterstoffen",
+      "aliases": [
+        "Organische koolwaterstoffen"
+      ],
+      "category": "Ruimte",
+      "explanation": "De duinen van Titan bestaan niet uit gewoon aards zand. Zware koolstofrijke verbindingen uit de atmosfeer komen op het oppervlak terecht en vormen er donkere korrels.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/moons/titan/facts/",
+          "title": "Titan: Facts",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_09dbcdff23a3d3ab2a90b5ad",
+      "question": "Welke twee koolwaterstoffen vullen op Titan rivieren en meren in plaats van water?",
+      "answer": "Methaan en ethaan",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Titan is extreem koud, waardoor methaan en ethaan vloeibaar kunnen zijn. Ze stromen over het oppervlak, slijten rivierbeddingen uit en vullen daar meren en zeeën.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/saturn/moons/titan/facts/",
+          "title": "Titan: Facts",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_0be8617917ef329b7b62d126",
+      "question": "Welke vloeistof koelt de supergeleidende magneten van de Large Hadron Collider?",
+      "answer": "Vloeibaar helium",
+      "aliases": [
+        "Helium"
+      ],
+      "category": "Technologie",
+      "explanation": "De magneten van de LHC werken bij ongeveer min 271,3 graden Celsius. Een distributiesysteem met vloeibaar helium houdt ze koud genoeg om supergeleidend te zijn.",
+      "sources": [
+        {
+          "url": "https://home.cern/science/accelerators/large-hadron-collider",
+          "title": "Large Hadron Collider – Home | CERN",
+          "publisher": "CERN",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_df1a83bdaa3be8348f778155",
+      "question": "Hoe heet het lichte, poreuze vulkanische gesteente waarvan de rhyolitische variant vaak op water drijft?",
+      "answer": "Puimsteen",
+      "aliases": [
+        "Pumice"
+      ],
+      "category": "Aarde",
+      "explanation": "Puimsteen ontstaat wanneer ontsnappende gassen magma opschuimen dat vervolgens afkoelt en stolt. De rhyolitische variant heeft vaak een dichtheid die laag genoeg is om te drijven.",
+      "sources": [
+        {
+          "url": "https://www.usgs.gov/glossary/volcano-hazards-program-glossary",
+          "title": "Volcano Hazards Program Glossary | U.S. Geological Survey",
+          "publisher": "U.S. Geological Survey",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_e9ba86b4b3c8dd06e3fd5ceb",
+      "question": "Hoe heet het doorgaans zwarte, dichte vulkanische glas dat meestal een rhyolitische samenstelling heeft?",
+      "answer": "Obsidiaan",
+      "aliases": [
+        "Obsidian"
+      ],
+      "category": "Aarde",
+      "explanation": "Obsidiaan ontstaat in lavastromen die zo snel afkoelen dat kristallen geen tijd krijgen om te groeien. Het resultaat is dicht vulkanisch glas, doorgaans zwart van kleur.",
+      "sources": [
+        {
+          "url": "https://www.usgs.gov/glossary/volcano-hazards-program-glossary",
+          "title": "Volcano Hazards Program Glossary | U.S. Geological Survey",
+          "publisher": "U.S. Geological Survey",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_837b233005bae6ef5c8bfec8",
+      "question": "Wat duwde bij de waarnemingen in 2013 de bewegende stenen van Racetrack Playa vooruit?",
+      "answer": "Dunne, drijvende ijsplaten",
+      "aliases": [
+        "IJsplaten",
+        "Drijvend ijs"
+      ],
+      "category": "Aarde",
+      "explanation": "Onderzoekers zagen hoe dunne ijsplaten in een ondiepe plas door lichte wind werden voortbewogen. De platen duwden stenen vooruit, die sporen in de zachte modder achterlieten.",
+      "sources": [
+        {
+          "url": "https://www.nps.gov/deva/learn/news/racetrack.htm",
+          "title": "Mystery Solved Mysterious “sailing stones” of Death Valley  seen in action for the first time - Death Valley National Park (U.S. National Park Service)",
+          "publisher": "National Park Service",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_48f39f0c4649c6e3e7bc7889",
+      "question": "Welk metaal heeft een smeltpunt van 29,7646 graden Celsius dat als vast punt voor temperatuurmetingen wordt gebruikt?",
+      "answer": "Gallium",
+      "aliases": [],
+      "category": "Natuurkunde",
+      "explanation": "Het smeltpunt van zeer zuiver gallium is een vast referentiepunt van de internationale temperatuurschaal ITS-90. NIST onderzocht daarvoor materiaal dat voor ruim 99,99999 procent zuiver was.",
+      "sources": [
+        {
+          "url": "https://www.nist.gov/publications/standard-reference-material-1751-gallium-melting-point-standard",
+          "title": "Standard Reference Material 1751 - A Gallium Melting-Point Standard | NIST",
+          "publisher": "National Institute of Standards and Technology",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_02c03a62fdb9f6a206b48728",
+      "question": "Uit welk zuur bestaan de dichte wolken van Venus?",
+      "answer": "Zwavelzuur",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "De atmosfeer van Venus bestaat grotendeels uit koolstofdioxide, maar de dichte wolken zijn samengesteld uit zwavelzuur. Het wolkendek is dus niet zoals de waterwolken op aarde.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/venus/facts/",
+          "title": "Venus: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_16fc16921072bc9f48a22ee6",
+      "question": "Welke planeet draait in ongeveer 243 aardse dagen om zijn as, maar in ongeveer 225 aardse dagen om de zon?",
+      "answer": "Venus",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Een volledige aswenteling van Venus duurt langer dan haar omloop om de zon. Dit gaat om de rotatieperiode, niet om de tijd tussen twee opeenvolgende zonsopkomsten.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/venus/facts/",
+          "title": "Venus: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_8c5ebfbb4d982d7ed832672d",
+      "question": "Hoe vaak zo groot als op zeeniveau op aarde is de luchtdruk aan het oppervlak van Venus ongeveer?",
+      "answer": "93 keer",
+      "aliases": [
+        "Drieënnegentig keer"
+      ],
+      "category": "Ruimte",
+      "explanation": "De dichte atmosfeer van Venus veroorzaakt aan het oppervlak een druk van ongeveer 93 aardse atmosferen. Dat maakt het oppervlak bijzonder lastig bereikbaar voor overlevende meetapparatuur.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/venus/facts/",
+          "title": "Venus: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_607b46c2f2f3259200b549ed",
+      "question": "Van welk materiaal zijn de grote bergblokken op Pluto gemaakt?",
+      "answer": "Waterijs",
+      "aliases": [
+        "Bevroren water"
+      ],
+      "category": "Ruimte",
+      "explanation": "De bergen op Pluto bestaan uit grote blokken waterijs en kunnen enkele kilometers hoog zijn. Soms ligt er over dat ijs een laagje bevroren gas, zoals methaan.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/dwarf-planets/pluto/facts/",
+          "title": "Pluto: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_7d64b5a9e0bbbc2225789b63",
+      "question": "Welke grote maan blijft vanaf een geschikte vaste plek op Pluto boven dezelfde plek aan de hemel hangen?",
+      "answer": "Charon",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Charons omlooptijd is gelijk aan de rotatieperiode van Pluto. Daardoor komt deze maan daar niet op en gaat zij niet onder zoals onze maan dat doet.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/dwarf-planets/pluto/facts/",
+          "title": "Pluto: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_a706f945e0999f7a19a074a1",
+      "question": "Welke grote maan draait rond Neptunus tegen de draairichting van de planeet in?",
+      "answer": "Triton",
+      "aliases": [],
+      "category": "Ruimte",
+      "explanation": "Triton beweegt in een retrograde baan: tegenovergesteld aan Neptunus’ rotatie. Dit onderscheidt hem van andere grote manen en wijst erop dat hij waarschijnlijk later werd ingevangen.",
+      "sources": [
+        {
+          "url": "https://science.nasa.gov/neptune/facts/",
+          "title": "Neptune: Facts - NASA Science",
+          "publisher": "NASA",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse formulering van geverifieerde feiten; geen artikeltekst of afbeeldingen overgenomen. Geen algemene CC0-licentie van de bron geclaimd."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_bfb3c87177bc37e9db73ac28",
+      "question": "Aan welke bioscoopsnack doet de urinegeur van een binturong denken?",
+      "answer": "Boterpopcorn",
+      "aliases": [
+        "Popcorn",
+        "Gepofte maïs"
+      ],
+      "category": "Dieren",
+      "explanation": "Een stof in binturongurine veroorzaakt dezelfde kenmerkende geur als popcorn. De dierentuin beschrijft de overeenkomst specifiek als boterpopcorn; het gaat dus niet om het voer van het dier.",
+      "sources": [
+        {
+          "url": "https://nationalzoo.si.edu/animals/binturong",
+          "title": "Binturong",
+          "publisher": "Smithsonian Institution — National Zoo and Conservation Biology Institute",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_ec9d32bee505acf3bfe542d8",
+      "question": "Waar sluiten naakte molratten hun lippen om tijdens het graven geen aarde binnen te krijgen?",
+      "answer": "Achter hun snijtanden",
+      "aliases": [
+        "Achter de voortanden"
+      ],
+      "category": "Dieren",
+      "explanation": "Hun grote snijtanden steken buiten de afgesloten mond uit. Zo kunnen naakte molratten met hun tanden grond loswerken zonder dat die grond meteen hun mond in komt.",
+      "sources": [
+        {
+          "url": "https://www.nationalzoo.si.edu/animals/naked-mole-rat",
+          "title": "Naked mole-rat",
+          "publisher": "Smithsonian Institution — National Zoo and Conservation Biology Institute",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_ecee501223e9e331ffc965e2",
+      "question": "Waar halen naakte molratten hun water vandaan als ze niet drinken?",
+      "answer": "Uit hun voedsel",
+      "aliases": [
+        "Uit plantenknollen",
+        "Uit de planten die ze eten"
+      ],
+      "category": "Dieren",
+      "explanation": "Naakte molratten eten vooral ondergrondse plantendelen, waaronder sappige knollen. Volgens de dierentuin levert dat voedsel al het benodigde water, zodat de dieren niet hoeven te drinken.",
+      "sources": [
+        {
+          "url": "https://www.nationalzoo.si.edu/animals/naked-mole-rat",
+          "title": "Naked mole-rat",
+          "publisher": "Smithsonian Institution — National Zoo and Conservation Biology Institute",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_22fe0d7ae1e8a1b633d88a97",
+      "question": "Op welke lichaamsdelen zitten bij een okapi geurklieren die een kleverig spoor achterlaten?",
+      "answer": "Op de voeten",
+      "aliases": [
+        "Aan de voeten",
+        "Aan elke voet"
+      ],
+      "category": "Dieren",
+      "explanation": "Elke voet heeft een geurklier die tijdens het lopen een teerachtige stof achterlaat. Andere okapi’s kunnen deze geursporen besnuffelen en zo merken dat er een soortgenoot langskwam.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/animals/okapi",
+          "title": "Okapi",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_a1ddd99bf23137ec8b4d0871",
+      "question": "Met welk lichaamsdeel kan een okapi zijn eigen oren bereiken?",
+      "answer": "Met zijn tong",
+      "aliases": [
+        "De tong"
+      ],
+      "category": "Dieren",
+      "explanation": "De donkere tong van een okapi is niet alleen geschikt om bladeren te pakken. Hij is ook zo lang dat het dier er zijn ogen en oren mee kan bereiken.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/animals/okapi",
+          "title": "Okapi",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_fe9251484288a9e70283bcc6",
+      "question": "Naar welke kant opent de buidel van een vrouwelijke wombat?",
+      "answer": "Naar achteren",
+      "aliases": [
+        "Richting haar achterwerk",
+        "Naar de achterkant"
+      ],
+      "category": "Dieren",
+      "explanation": "De opening wijst naar het achterste van de moeder, niet naar haar kop. Daardoor komt er tijdens het graven minder aarde terecht in de buidel waarin het jong zit.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/animals/wombat",
+          "title": "Wombat",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_c65869c8ec5fb5b247b57734",
+      "question": "Met welk lichaamsdeel kan een bedreigde wombat de ingang van zijn hol blokkeren?",
+      "answer": "Met zijn achterwerk",
+      "aliases": [
+        "Zijn kont",
+        "Zijn achterste"
+      ],
+      "category": "Dieren",
+      "explanation": "Een wombat kan met de kop vooruit zijn tunnel induiken en het stevige achterste naar buiten houden. De extra dikke huid biedt daar bescherming tegen een bijtende belager.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/animals/wombat",
+          "title": "Wombat",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_46e488b32d9f40125fa32969",
+      "question": "Welke vinger gebruikt een vingerdier om larven uit kleine gaatjes in hout te peuteren?",
+      "answer": "Zijn middelvinger",
+      "aliases": [
+        "De middelvinger"
+      ],
+      "category": "Dieren",
+      "explanation": "Het vingerdier, ook ayeaye genoemd, heeft een opvallend dunne middelvinger. Nadat het een opening heeft geknaagd, kan die gespecialiseerde vinger de verborgen insectenlarven uit het hout halen.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/animals/lemur",
+          "title": "Lemur",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_7f129d304daddf8dbcbc4da8",
+      "question": "Waarop lijken Lithops-plantjes om tussen hun omgeving niet op te vallen?",
+      "answer": "Op stenen",
+      "aliases": [
+        "Op keien",
+        "Op rotssteentjes"
+      ],
+      "category": "Planten",
+      "explanation": "De gladde oppervlakken en grijzige kleuren laten deze vetplanten op stenen lijken. Daardoor vallen ze minder op tussen echte rotsfragmenten, ook al zijn het levende planten.",
+      "sources": [
+        {
+          "url": "https://www.kew.org/read-and-watch/cutest-plants-kew-pictures",
+          "title": "In Pictures: Kew’s cutest plants",
+          "publisher": "Royal Botanic Gardens, Kew",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_2c8ff82ff6e3fe23e031abed",
+      "question": "Welke delen van Mimosa pudica klappen dicht wanneer je de plant aanraakt?",
+      "answer": "De bladeren",
+      "aliases": [
+        "De blaadjes"
+      ],
+      "category": "Planten",
+      "explanation": "Mimosa pudica heeft kleine roze bloemhoofdjes. De gevoelige bladeren sluiten zich bij aanraking of schudden; daaraan dankt de plant haar reputatie als een bijzonder schuw plantje.",
+      "sources": [
+        {
+          "url": "https://www.kew.org/read-and-watch/cutest-plants-kew-pictures",
+          "title": "In Pictures: Kew’s cutest plants",
+          "publisher": "Royal Botanic Gardens, Kew",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_672b2e34ee75b22c980b3634",
+      "question": "Hoeveel blijvende bladeren vormt een Welwitschia, ook wanneer hij heel oud wordt?",
+      "answer": "Twee",
+      "aliases": [
+        "2",
+        "Twee bladeren"
+      ],
+      "category": "Planten",
+      "explanation": "Een Welwitschia heeft twee lange, leerachtige bladeren die blijven doorgroeien. Hun uiteinden kunnen rafelen, waardoor het lijkt alsof de plant veel meer afzonderlijke bladeren heeft ontwikkeld.",
+      "sources": [
+        {
+          "url": "https://herbaria.plants.ox.ac.uk/bol/plants400/Profiles/WX/Welwitschia",
+          "title": "Oxford University Plants 400: Welwitschia mirabilis",
+          "publisher": "University of Oxford — Department of Biology",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_f2d723bd1693c10bc9f0d13d",
+      "question": "Waar aan een cacaoboom ontspringen de bloemen rechtstreeks, in plaats van alleen aan jonge twijgjes?",
+      "answer": "Aan de stam en takken",
+      "aliases": [
+        "Op de stam en takken",
+        "Rechtstreeks op stam en takken"
+      ],
+      "category": "Planten",
+      "explanation": "De roze of witte bloemen groeien direct uit de stam en de takken. Na bestuiving kunnen deze kleine bloemen uitgroeien tot de grote vruchten met cacaobonen.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/plants/cacao",
+          "title": "Cacao | San Diego Zoo Animals & Plants",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_0d64d0fd14327a72ad6c0623",
+      "question": "Op welke vogel lijken de bloemen van Impatiens psittacina?",
+      "answer": "Een papegaai",
+      "aliases": [
+        "Papegaai"
+      ],
+      "category": "Planten",
+      "explanation": "De kleurige bloemen hebben een vorm die aan een papegaai doet denken. Dat verklaart de Engelse volksnaam van deze zeldzame soort, zonder dat de plant zelf kan vliegen.",
+      "sources": [
+        {
+          "url": "https://www.kew.org/read-and-watch/cutest-plants-kew-pictures",
+          "title": "In Pictures: Kew’s cutest plants",
+          "publisher": "Royal Botanic Gardens, Kew",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_49300365c2669f28eaa59ee0",
+      "question": "Hoeveel graden kunnen volwassen cacaobladeren zowel horizontaal als verticaal bewegen?",
+      "answer": "Negentig graden",
+      "aliases": [
+        "90 graden",
+        "90"
+      ],
+      "category": "Planten",
+      "explanation": "Volwassen bladeren kunnen zowel horizontaal als verticaal negentig graden bewegen. Zo vangen ze zonlicht en beschermen ze jongere bladeren; hun plek aan de boom blijft daarbij dezelfde.",
+      "sources": [
+        {
+          "url": "https://animals.sandiegozoo.org/plants/cacao",
+          "title": "Cacao | San Diego Zoo Animals & Plants",
+          "publisher": "San Diego Zoo Wildlife Alliance",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_b37340928a34e3815c1bc3c1",
+      "question": "Piment heet in het Engels allspice. Wat is het eigenlijk, in plaats van een specerijenmengsel?",
+      "answer": "Een gedroogde onrijpe bes",
+      "aliases": [
+        "Een onrijpe bes",
+        "Een bes"
+      ],
+      "category": "Eten",
+      "explanation": "Piment komt van de boom Pimenta dioica. De onrijpe bessen worden verwerkt en gedroogd; hun smaak doet aan verschillende specerijen denken, maar ze vormen geen mengsel.",
+      "sources": [
+        {
+          "url": "https://www.kew.org/read-and-watch/christmas-spices",
+          "title": "Christmas spice makes all things nice",
+          "publisher": "Royal Botanic Gardens, Kew",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_2f4ba1db1d55a14743d8a2bd",
+      "question": "Bij welk ritueel gebruikten de oude Egyptenaren kaneel voor hun doden?",
+      "answer": "Bij het balsemen",
+      "aliases": [
+        "Balseming",
+        "Mummificeren",
+        "Mummificatie"
+      ],
+      "category": "Eten",
+      "explanation": "Kaneel had niet alleen een culinaire toepassing. Kew beschrijft dat oude Egyptenaren de specerij gebruikten tijdens het balsemen, lang voordat zij in moderne ontbijtgerechten terechtkwam.",
+      "sources": [
+        {
+          "url": "https://www.kew.org/read-and-watch/christmas-spices",
+          "title": "Christmas spice makes all things nice",
+          "publisher": "Royal Botanic Gardens, Kew",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_c1fb708394c3b7a724e5e2c0",
+      "question": "Welk nog ongeopend plantendeel wordt gedroogd om kruidnagels te maken?",
+      "answer": "Een bloemknop",
+      "aliases": [
+        "Bloemknoppen",
+        "Een ongeopende bloemknop"
+      ],
+      "category": "Eten",
+      "explanation": "Kruidnagels zijn de gedroogde bloemknoppen van Syzygium aromaticum. Ze worden geplukt voordat ze openstaan en traditioneel in de zon gedroogd; het zijn dus geen spijkervormige zaadjes.",
+      "sources": [
+        {
+          "url": "https://www.kew.org/read-and-watch/christmas-spices",
+          "title": "Christmas spice makes all things nice",
+          "publisher": "Royal Botanic Gardens, Kew",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_97b0b5521122e4dd839b3b05",
+      "question": "Welke specerij maken we van het vliesachtige omhulsel rond een nootmuskaatzaad?",
+      "answer": "Foelie",
+      "aliases": [
+        "Mace"
+      ],
+      "category": "Eten",
+      "explanation": "Dezelfde boom levert nootmuskaat en foelie. Voor nootmuskaat gebruikt men het zaad; het daaromheen liggende zaadmanteltje, ook aril genoemd, wordt gedroogd om foelie te krijgen.",
+      "sources": [
+        {
+          "url": "https://unitproj.library.ucla.edu/biomed/spice/index.cfm?displayID=19",
+          "title": "Medicinal Spices Exhibit - UCLA Biomedical Library: History & Special Collections",
+          "publisher": "UCLA Louise M. Darling Biomedical Library",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_499c970b26679a165ae9d4de",
+      "question": "Welke laag van een peperkorrel wordt verwijderd bij het maken van witte peper?",
+      "answer": "De vruchthuid",
+      "aliases": [
+        "De buitenste vruchthuid",
+        "Het vruchtwandje",
+        "Het buitenste schilletje"
+      ],
+      "category": "Eten",
+      "explanation": "Zwarte en witte peper kunnen van dezelfde plant komen: Piper nigrum. De UCLA-bibliotheek beschrijft witte peper onder meer als peper waarvan de buitenste vruchthuid is afgehaald.",
+      "sources": [
+        {
+          "url": "https://unitproj.library.ucla.edu/biomed/spice/index.cfm?displayID=20",
+          "title": "Medicinal Spices Exhibit - UCLA Biomedical Library: History & Special Collections",
+          "publisher": "UCLA Louise M. Darling Biomedical Library",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_8224203fbe2ee4d97124908b",
+      "question": "Welk deel van de kapperstruik eten we als de kleine kappertjes uit een potje?",
+      "answer": "De ongeopende bloemknoppen",
+      "aliases": [
+        "Bloemknoppen",
+        "Ongeopende bloemen"
+      ],
+      "category": "Eten",
+      "explanation": "Gewone kappertjes zijn gezouten of ingelegde bloemknoppen die nog niet geopend zijn. De grotere kapperappeltjes zijn juist vruchten van de struik, en dus een ander product.",
+      "sources": [
+        {
+          "url": "https://hort.extension.wisc.edu/articles/capers-capparis-spinosa/",
+          "title": "Capers, Capparis spinosa",
+          "publisher": "University of Wisconsin–Madison Division of Extension",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_7adc3f7cb6de59861e7acdcc",
+      "question": "Van welk natuurlijk materiaal zijn de twintig speelvakken van het Koninklijke Spel van Ur in het British Museum gemaakt?",
+      "answer": "Van schelp",
+      "aliases": [
+        "Schelp",
+        "Schelpmateriaal"
+      ],
+      "category": "Geschiedenis",
+      "explanation": "Het houten bord verging, maar ingelegde materialen bleven op hun plaats liggen. De twintig speelvakken zijn van schelp; er zijn ook rode kalksteen en lapis lazuli gebruikt.",
+      "sources": [
+        {
+          "url": "https://artsandculture.google.com/asset/the-royal-game-of-ur/MwE2MMZNSKiTwQ?hl=en",
+          "title": "The Royal Game of Ur",
+          "publisher": "British Museum (via Google Arts & Culture)",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_eea707b5b7da5e24b757789b",
+      "question": "Welk bloemachtig motief markeert de geluksvakken op het Koninklijke Spel van Ur?",
+      "answer": "Een rozet",
+      "aliases": [
+        "Rozetten",
+        "Een bloemrozet"
+      ],
+      "category": "Geschiedenis",
+      "explanation": "Sommige vakken dragen gestileerde bloemen, de rozetten. De museumtekst vermeldt dat deze vakken geluk brachten; andere speelvakken zijn onder meer versierd met ogen of stippenpatronen.",
+      "sources": [
+        {
+          "url": "https://artsandculture.google.com/asset/the-royal-game-of-ur/MwE2MMZNSKiTwQ?hl=en",
+          "title": "The Royal Game of Ur",
+          "publisher": "British Museum (via Google Arts & Culture)",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_be00a444e836f2dcb207cb9d",
+      "question": "Waar bijten de woest afgebeelde torens uit de middeleeuwse Lewis-schaakstukken in?",
+      "answer": "In hun schilden",
+      "aliases": [
+        "Hun schilden",
+        "Een schild"
+      ],
+      "category": "Geschiedenis",
+      "explanation": "Een aantal torens is als razende krijgers uitgebeeld, met de tanden in een schild. De museumtekst verbindt hun houding met de legendarische krijgers die berserkers worden genoemd.",
+      "sources": [
+        {
+          "url": "https://www.vikingeskibsmuseet.dk/en/professions/education/the-viking-age-geography/the-vikings-in-the-west/scotland/the-lewis-chessmen",
+          "title": "The Lewis Chessmen",
+          "publisher": "Viking Ship Museum, Roskilde",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_08ee05e1fc4230a169ed3c3e",
+      "question": "Welke vorm hebben de pionnen van de Lewis-schaakstukken, in plaats van een menselijke gedaante?",
+      "answer": "Obelisken",
+      "aliases": [
+        "Een obelisk",
+        "Obeliskvormen"
+      ],
+      "category": "Geschiedenis",
+      "explanation": "Bij deze middeleeuwse schaakstukken zijn de overige stukken als menselijke figuren uitgewerkt. De pionnen vormen de uitzondering: zij kregen de veel eenvoudigere vorm van kleine obelisken.",
+      "sources": [
+        {
+          "url": "https://www.vikingeskibsmuseet.dk/en/professions/education/the-viking-age-geography/the-vikings-in-the-west/scotland/the-lewis-chessmen",
+          "title": "The Lewis Chessmen",
+          "publisher": "Viking Ship Museum, Roskilde",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_42a21b917255913566c035f1",
+      "question": "Welke exotische vrucht krijgt Karel II aangeboden op een Engels schilderij van omstreeks 1675–1680?",
+      "answer": "Een ananas",
+      "aliases": [
+        "Ananas"
+      ],
+      "category": "Geschiedenis",
+      "explanation": "Het schilderij toont de koning met een knielende aanbieder van een kostbare ananas. Volgens de Royal Collection Trust kwam deze vrucht niet uit een Engelse kwekerij.",
+      "sources": [
+        {
+          "url": "https://www.rct.uk/collection/stories/public-dining-in-the-reign-of-charles-ii-1630-1685/charles-ii-presented-with-a-pineapple",
+          "title": "Charles II Presented with a Pineapple",
+          "publisher": "Royal Collection Trust",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_ab8c7afcb89a71da760105ff",
+      "question": "Welke waterplanten zijn op het blauwe Egyptische nijlpaardbeeldje William in het Metropolitan Museum geschilderd?",
+      "answer": "Lotussen",
+      "aliases": [
+        "Lotusbloemen",
+        "Waterlelies",
+        "Egyptische lotussen"
+      ],
+      "category": "Geschiedenis",
+      "explanation": "De geschilderde lotussen verwijzen naar de moerassen waarin nijlpaarden leven. Het museum legt ook uit dat de zich dagelijks openende bloemen vernieuwing en wedergeboorte symboliseren.",
+      "sources": [
+        {
+          "url": "https://www.metmuseum.org/art/collection/search/544227",
+          "title": "Hippopotamus (\"William\")",
+          "publisher": "The Metropolitan Museum of Art",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_73072afe9af8344141e87101",
+      "question": "In welk Brits humortijdschrift verscheen in 1931 de bijnaam William voor het beroemde blauwe Egyptische nijlpaardbeeldje?",
+      "answer": "Punch",
+      "aliases": [],
+      "category": "Geschiedenis",
+      "explanation": "De bijnaam stond eerst in een verhaal over een familie die een kleurenafbeelding van het beeldje raadpleegde. Het Metropolitan Museum herpubliceerde dat verhaal, waarna de naam bleef hangen.",
+      "sources": [
+        {
+          "url": "https://www.metmuseum.org/art/collection/search/544227",
+          "title": "Hippopotamus (\"William\")",
+          "publisher": "The Metropolitan Museum of Art",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_60677bed070bf069dba23424",
+      "question": "Hoe heet een zin waarin alle 26 letters van het alfabet minstens één keer voorkomen?",
+      "answer": "Een pangram",
+      "aliases": [
+        "Pangram"
+      ],
+      "category": "Taal",
+      "explanation": "Een pangram bevat het hele alfabet, maar hoeft niet iedere letter precies eenmaal te gebruiken. Zulke zinnen zijn handig om alle letters van een lettertype samen te bekijken.",
+      "sources": [
+        {
+          "url": "https://onzetaal.nl/educatie/ik-zit-op-de/middelbare-school/bijzondere-woordsoorten/pangram-vo",
+          "title": "Pangram",
+          "publisher": "Genootschap Onze Taal",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_8d8a80b5e6d4a7158d182bae",
+      "question": "Hoe heet een verspreking waarbij de beginklanken van twee woorden met elkaar worden verwisseld?",
+      "answer": "Een spoonerisme",
+      "aliases": [
+        "Spoonerisme",
+        "Spoonerism"
+      ],
+      "category": "Taal",
+      "explanation": "De term verwijst naar William Spooner, een bestuurder van New College in Oxford. Het college beschrijft deze versprekingen als het verwisselen van de eerste klanken van woorden.",
+      "sources": [
+        {
+          "url": "https://www.new.ox.ac.uk/new-college-through-time/modern-college",
+          "title": "The Modern College",
+          "publisher": "New College, University of Oxford",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    },
+    {
+      "id": "q_ac62330241f10fe5e28d8fb4",
+      "question": "Welke letter liet Georges Perec helemaal weg uit zijn roman La Disparition uit 1969?",
+      "answer": "De letter e",
+      "aliases": [
+        "E",
+        "De e"
+      ],
+      "category": "Taal",
+      "explanation": "Perec schreef deze lange roman onder een strenge letterbeperking: nergens mocht de e voorkomen. De nationale bibliotheek noemt het een kenmerkend voorbeeld van zijn speelse, vormgerichte manier van schrijven.",
+      "sources": [
+        {
+          "url": "https://www.bnf.fr/fr/georges-perec-1936-1982-bibliographie",
+          "title": "Georges Perec (1936-1982) - Bibliographie",
+          "publisher": "Bibliothèque nationale de France",
+          "accessedAt": "2026-11-07",
+          "rightsNote": "Eigen Nederlandse vraag en feitelijke toelichting; geen artikeltekst, afbeeldingen of spelkaarten overgenomen. Geen aanspraak op een vrije licentie voor de bron."
+        }
+      ],
+      "verifiedAt": "2026-11-07",
+      "approved": true
+    }
+  ]
+}
