@@ -23,6 +23,8 @@ import (
 	"unicode/utf8"
 )
 
+const sessionCookie = "vissig"
+
 // maxTurns caps turns per player; with 10 players this already needs 50 unused questions.
 const maxTurns = 5
 
@@ -57,12 +59,13 @@ type Command struct {
 	Turns   int    `json:"turns,omitempty"`
 }
 type Server struct {
-	db        *sql.DB
-	origin    string
-	questions []Question
-	proxies   []*net.IPNet
-	static    http.Handler
-	eventsHub eventHub
+	db           *sql.DB
+	origin       string
+	legacyOrigin string
+	questions    []Question
+	proxies      []*net.IPNet
+	static       http.Handler
+	eventsHub    eventHub
 }
 
 func random(n int) string {
@@ -80,7 +83,8 @@ func openServer(dir, origin string, fixtures bool) (*Server, error) {
 	if e := os.Chmod(dir, 0700); e != nil {
 		return nil, e
 	}
-	p := filepath.Join(dir, "bluffery.sqlite")
+	// Keep the pre-rename file and cookie names: renaming them would drop live games and sessions.
+	p := filepath.Join(dir, "vissig.sqlite")
 	f, e := os.OpenFile(p, os.O_CREATE|os.O_RDWR, 0600)
 	if e != nil {
 		return nil, e
@@ -123,14 +127,53 @@ func openServer(dir, origin string, fixtures bool) (*Server, error) {
 	return s, nil
 }
 func (s *Server) importCatalog() error {
+	// Validate the entire authoritative seed before starting any catalog writes.
+	b, e := json.Marshal(Catalog{SchemaVersion: 1, Questions: s.questions})
+	if e != nil {
+		return e
+	}
+	if _, e = validateCatalog(b); e != nil {
+		return e
+	}
+	if len(s.questions) < 20 {
+		return fmt.Errorf("approved seed requires at least 20 questions for a maximal game")
+	}
 	tx, e := s.db.Begin()
 	if e != nil {
 		return e
 	}
 	defer tx.Rollback()
+	active := map[string]bool{}
 	for _, q := range s.questions {
+		active[q.ID] = true
 		b, _ := json.Marshal(q)
 		if _, e = tx.Exec(`INSERT INTO catalog VALUES(?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data`, q.ID, string(b)); e != nil {
+			return e
+		}
+	}
+	rows, e := tx.Query(`SELECT id FROM catalog`)
+	if e != nil {
+		return e
+	}
+	var retired []string
+	for rows.Next() {
+		var id string
+		if e = rows.Scan(&id); e != nil {
+			rows.Close()
+			return e
+		}
+		if !active[id] {
+			retired = append(retired, id)
+		}
+	}
+	e = rows.Err()
+	rows.Close()
+	if e != nil {
+		return e
+	}
+	// Rooms own immutable dealt snapshots and historical used IDs; never rewrite them.
+	for _, id := range retired {
+		if _, e = tx.Exec(`DELETE FROM catalog WHERE id=?`, id); e != nil {
 			return e
 		}
 	}
@@ -156,7 +199,7 @@ var idRE = regexp.MustCompile(`^[a-zA-Z0-9_-]{8,80}$`)
 var codeRE = regexp.MustCompile(`^[A-F0-9]{6}$`)
 
 func (s *Server) session(r *http.Request) string {
-	c, e := r.Cookie("bluffery")
+	c, e := r.Cookie(sessionCookie)
 	if e != nil || len(c.Value) != 64 {
 		return ""
 	}
@@ -227,6 +270,11 @@ func (s *Server) cleanup(now int64) error {
 	return tx.Commit()
 }
 
+// Match only configured origins, never the request Host or forwarding headers.
+func (s *Server) allowedOrigin(origin string) bool {
+	return origin == s.origin || (s.legacyOrigin != "" && origin == s.legacyOrigin)
+}
+
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Referrer-Policy", "no-referrer")
@@ -250,12 +298,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
 	w.Header().Set("Cloudflare-CDN-Cache-Control", "no-store")
-	if r.Method != "GET" && (r.Header.Get("Origin") != s.origin || r.Header.Get("Sec-Fetch-Site") == "cross-site") {
+	if r.Method != "GET" && (!s.allowedOrigin(r.Header.Get("Origin")) || r.Header.Get("Sec-Fetch-Site") == "cross-site") {
 		fail(w, 403, "Alleen vanuit Bluffery toegestaan.")
 		return
 	}
 	if r.URL.Path == "/api/session" && r.Method == "GET" {
-		if r.Header.Get("Sec-Fetch-Site") == "cross-site" || (r.Header.Get("Origin") != "" && r.Header.Get("Origin") != s.origin) {
+		if r.Header.Get("Sec-Fetch-Site") == "cross-site" || (r.Header.Get("Origin") != "" && !s.allowedOrigin(r.Header.Get("Origin"))) {
 			fail(w, 403, "Alleen vanuit Bluffery toegestaan.")
 			return
 		}
@@ -283,7 +331,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				fail(w, 503, "Opslag tijdelijk niet beschikbaar.")
 				return
 			}
-			http.SetCookie(w, &http.Cookie{Name: "bluffery", Value: token, Path: "/", HttpOnly: true, Secure: strings.HasPrefix(s.origin, "https://"), SameSite: http.SameSiteStrictMode, MaxAge: 86400 * 7})
+			http.SetCookie(w, &http.Cookie{Name: sessionCookie, Value: token, Path: "/", HttpOnly: true, Secure: strings.HasPrefix(s.origin, "https://"), SameSite: http.SameSiteStrictMode, MaxAge: 86400 * 7})
 		}
 		io.WriteString(w, `{"ok":true}`)
 		return
@@ -546,7 +594,17 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 				r.Turns = 2
 			}
 		}
-		if len(s.questions)-len(r.Used) < len(r.Players)*r.Turns {
+		used := map[string]bool{}
+		for _, id := range r.Used {
+			used[id] = true
+		}
+		available := 0
+		for _, q := range s.questions {
+			if !used[q.ID] {
+				available++
+			}
+		}
+		if available < len(r.Players)*r.Turns {
 			return 409, "Niet genoeg ongebruikte vragen voor dit spel."
 		}
 		r.Phase = "ready"

@@ -23,7 +23,7 @@ test("original landing, QR and narrow controls render without overflow", async (
   await page.getByRole("button", { name: "Nieuwe tafel" }).click();
   await expect(page.locator("img.qr")).toBeVisible();
   const cookie = (await page.context().cookies()).find(
-    (c) => c.name === "bluffery",
+    (c) => c.name === "vissig",
   );
   expect(cookie?.httpOnly).toBe(true);
   expect(cookie?.sameSite).toBe("Strict");

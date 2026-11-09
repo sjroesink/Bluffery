@@ -81,6 +81,13 @@ func fixtureSafe(origin, listen string) bool {
 	host, _, e := net.SplitHostPort(listen)
 	return e == nil && isLoop(u.Hostname()) && isLoop(host)
 }
+func exactPublicOrigin(origin string) bool {
+	u, err := url.Parse(origin)
+	return err == nil && (u.Scheme == "http" || u.Scheme == "https") &&
+		u.Hostname() != "" && u.User == nil && !strings.ContainsAny(origin, "?#") &&
+		origin == u.Scheme+"://"+u.Host
+}
+
 func main() {
 	if len(os.Args) > 1 && os.Args[1] == "healthcheck" {
 		client := http.Client{Timeout: 3 * time.Second}
@@ -110,19 +117,25 @@ func main() {
 		return
 	}
 	origin := env("PUBLIC_BASE_URL", "http://localhost:8080")
-	u, e := url.Parse(origin)
-	if e != nil || u.Host == "" || (u.Scheme != "http" && u.Scheme != "https") || u.User != nil || u.RawQuery != "" || u.Fragment != "" || (u.Path != "" && u.Path != "/") {
+	if !exactPublicOrigin(origin) {
 		log.Fatal("PUBLIC_BASE_URL must be an exact http(s) origin")
 	}
+	legacyOrigin := os.Getenv("LEGACY_PUBLIC_BASE_URL")
+	if legacyOrigin != "" && (!exactPublicOrigin(legacyOrigin) || (strings.HasPrefix(origin, "https://") && !strings.HasPrefix(legacyOrigin, "https://"))) {
+		log.Fatal("LEGACY_PUBLIC_BASE_URL must be an exact http(s) origin and use HTTPS when PUBLIC_BASE_URL does")
+	}
 	fixtures := os.Getenv("BLUFFERY_DEV_FIXTURES") == "1"
-	if fixtures && !fixtureSafe(origin, env("LISTEN_ADDR", ":8080")) {
+	listen := env("LISTEN_ADDR", ":8080")
+	if fixtures && (!fixtureSafe(origin, listen) || (legacyOrigin != "" && !fixtureSafe(legacyOrigin, listen))) {
 		log.Fatal("development fixtures allowed only on loopback origins")
 	}
-	s, e := openServer(env("DATA_DIR", "./data"), strings.TrimRight(origin, "/"), fixtures)
+	s, e := openServer(env("DATA_DIR", "./data"), origin, fixtures)
 	if e != nil {
 		log.Fatal(e)
 	}
 	defer s.db.Close()
+	// Explicit transition-only trust; PUBLIC_BASE_URL remains canonical.
+	s.legacyOrigin = legacyOrigin
 	for _, value := range strings.Split(os.Getenv("TRUSTED_PROXY_CIDRS"), ",") {
 		if strings.TrimSpace(value) == "" {
 			continue

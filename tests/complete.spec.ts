@@ -33,6 +33,9 @@ test("four independent phones finish a whole game through all risk endings", asy
       await p.getByRole("button", { name: "Uitdelen", exact: true }).click();
       await expect(p.getByTestId("pot")).toBeVisible();
       const st = await (await p.request.get("/api/state")).json();
+      expect(st.answer).toBeUndefined();
+      expect(st.sources).toBeUndefined();
+      await expect(p.getByText("Bronnen", { exact: true })).toHaveCount(0);
       expect(questions.has(st.question)).toBe(false);
       questions.add(st.question);
       let blue = "";
@@ -72,6 +75,23 @@ test("four independent phones finish a whole game through all risk endings", asy
         await expect(p.getByRole("heading", { name: "Binnen" })).toBeVisible();
       }
       await expect(p.getByTestId("settled-answer")).toBeVisible();
+      await p.getByText("Bronnen", { exact: true }).click();
+      const settled = await (await p.request.get("/api/state")).json();
+      for (const source of settled.sources) {
+        const item = p
+          .locator("li")
+          .filter({
+            has: p.getByRole("link", {
+              name: source.publisher + " · " + source.title,
+              exact: true,
+            }),
+          });
+        await expect(item).toContainText(source.rightsNote);
+        await expect(item.getByRole("link")).toHaveAttribute(
+          "href",
+          source.url,
+        );
+      }
       expect(
         await p.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,

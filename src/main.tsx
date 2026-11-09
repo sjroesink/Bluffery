@@ -3,7 +3,12 @@ import { createRoot } from "react-dom/client";
 import QRCode from "qrcode";
 import "./style.css";
 type Player = { id: string; name: string; score: number };
-type Source = { url: string; title: string; publisher: string };
+type Source = {
+  url: string;
+  title: string;
+  publisher: string;
+  rightsNote: string;
+};
 type State = {
   code: string;
   version: number;
@@ -1024,6 +1029,7 @@ function App() {
                     <a href={s.url} rel="noreferrer" target="_blank">
                       {s.publisher} · {s.title}
                     </a>
+                    <span className="rights">{s.rightsNote}</span>
                   </li>
                 ))}
               </ul>
@@ -1162,7 +1168,7 @@ function App() {
   }
 
   return (
-    <div className={"app " + theme}>
+    <div className={"app " + (state ? theme : "start")}>
       <main
         className={
           "wrap" +
@@ -1269,7 +1275,40 @@ function App() {
                   netwerkadressen. De privécookie zit nooit in de deelcode;
                   zonder die cookie kun je niet terugkeren.
                 </p>
-                <p>Onafhankelijk spel met eigen vormgeving en vragen.</p>
+                <h3>Bronnen &amp; rechten</h3>
+                <p>
+                  Rechten verschillen per bron; de bronverantwoording en
+                  rechtennotitie bij een vraag verschijnen pas na de beurt.
+                </p>
+                <ul className="rules">
+                  <li>
+                    <a
+                      href="https://huggingface.co/datasets/YWZBrandon/wikidyk"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      WikiDYK
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://en.wikipedia.org/wiki/Wikipedia:Unusual_articles"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Wikipedia · Unusual articles
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://opentdb.com/" target="_blank" rel="noreferrer">
+                      Open Trivia Database
+                    </a>
+                  </li>
+                </ul>
+                <p>
+                  Onafhankelijk spel met eigen vormgeving en Nederlandse
+                  vraagbewerkingen.
+                </p>
               </>
             )}
           </section>

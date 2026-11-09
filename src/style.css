@@ -99,7 +99,11 @@ ol {
 .app {
   min-height: 100dvh;
   background: var(--bg);
-  overflow-x: clip;
+}
+.app.start {
+  background:
+    radial-gradient(circle at 50% -70px, var(--surface) 0 300px, transparent 301px),
+    var(--bg);
 }
 .app.theme-red {
   background: var(--orange);
@@ -359,18 +363,6 @@ ol {
   justify-content: center;
   gap: 18px;
   text-align: center;
-}
-.hero::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  background: var(--surface);
-  top: -330px;
-  left: 50%;
-  transform: translateX(-50%);
 }
 .hero h1 {
   font: 800 clamp(48px, 16vw, 64px) / 1 var(--display);
@@ -706,6 +698,7 @@ ol {
 .question h1 {
   font: 700 19px/1.3 var(--display);
   letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
 }
 .pot {
   display: flex;
@@ -754,6 +747,8 @@ ol {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  /* Confetti may fly sideways; keep it from widening the page. */
+  overflow-x: clip;
 }
 .suspect {
   position: relative;
@@ -1085,6 +1080,7 @@ ol {
 }
 .role-question {
   font: 700 17px/1.35 var(--display);
+  overflow-wrap: anywhere;
 }
 .role-stage {
   flex-grow: 1;
@@ -1213,6 +1209,7 @@ ol {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  overflow-wrap: anywhere;
   font-size: 14px;
 }
 .reveal-card a {
@@ -1278,6 +1275,7 @@ ol {
 .backdrop {
   position: fixed;
   inset: 0;
+  overflow: hidden;
   z-index: 20;
   background: rgba(10, 8, 25, 0.72);
   display: flex;
@@ -1583,4 +1581,10 @@ ol {
   .rain {
     display: none;
   }
+}
+.reveal-card .rights {
+  display: block;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #dce3ff;
 }

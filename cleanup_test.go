@@ -7,9 +7,10 @@ import (
 )
 
 func TestNewSessionCannotEraseLiveRetryLedger(t *testing.T) {
+	wallClock := time.Now().UTC()
 	synctest.Test(t, func(t *testing.T) {
-		// synctest starts in 2000; move past the approved catalog's verified dates.
-		time.Sleep(time.Date(2026, 11, 7, 12, 0, 0, 0, time.UTC).Sub(time.Now()))
+		// synctest starts in 2000; align with the wall clock captured outside the bubble.
+		time.Sleep(wallClock.Sub(time.Now()))
 		s := setup(t)
 		_, _, c := req(t, s, "", "/api/session", "")
 		body := `{"id":"create-stable-0001","action":"create","name":"Stable"}`
@@ -36,9 +37,10 @@ func TestNewSessionCannotEraseLiveRetryLedger(t *testing.T) {
 	})
 }
 func TestNewSessionDeletesOnlyExpiredRows(t *testing.T) {
+	wallClock := time.Now().UTC()
 	synctest.Test(t, func(t *testing.T) {
-		// synctest starts in 2000; move past the approved catalog's verified dates.
-		time.Sleep(time.Date(2026, 11, 7, 12, 0, 0, 0, time.UTC).Sub(time.Now()))
+		// synctest starts in 2000; align with the wall clock captured outside the bubble.
+		time.Sleep(wallClock.Sub(time.Now()))
 		s := setup(t)
 		now := time.Now().Unix()
 		cutoff := now - 86400*7
@@ -99,8 +101,9 @@ func TestNewSessionDeletesOnlyExpiredRows(t *testing.T) {
 }
 
 func TestNewSessionCannotResetCommandQuota(t *testing.T) {
+	wallClock := time.Now().UTC()
 	synctest.Test(t, func(t *testing.T) {
-		time.Sleep(time.Date(2026, 11, 7, 12, 0, 0, 0, time.UTC).Sub(time.Now()))
+		time.Sleep(wallClock.Sub(time.Now()))
 		s := setup(t)
 		_, _, cookie := req(t, s, "", "/api/session", "")
 		body := `{"id":"quota-create-0001","action":"create","name":"Quota"}`

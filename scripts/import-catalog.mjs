@@ -50,7 +50,7 @@ try {
       throw e;
     }
     console.log(
-      "Imported reviewed seed. Rebuild and restart to transactionally upsert SQLite catalog.",
+      "Imported reviewed seed. Rebuild and restart to transactionally replace the SQLite catalog; dealt round snapshots stay unchanged.",
     );
   } else
     console.log(
