@@ -30,3 +30,17 @@ for filename, size, face in [('icon-192.png', 192, .78), ('icon-512.png', 512, .
     d.ellipse(box(34, 22, 3.2, 3.2), fill=INK)
     d.arc([p(17, 25), p(33, 38)], 40, 150, fill=INK, width=max(2, round(2.6 * u)))
     im.resize((size, size), Image.LANCZOS).save(Path('public') / filename)
+
+# Favicon: the bare mascot on transparency, for tabs and the default /favicon.ico request.
+big = 256 * SCALE
+im = Image.new('RGBA', (big, big), (0, 0, 0, 0))
+d = ImageDraw.Draw(im)
+u = big / 44
+ox = oy = 0
+d.rounded_rectangle([p(2, 2), p(46, 46)], radius=14 * u, fill=ORANGE)
+d.ellipse(box(17, 21, 6.5, 7.5), fill=WHITE)
+d.ellipse(box(31, 21, 6.5, 7.5), fill=WHITE)
+d.ellipse(box(20, 22, 3.2, 3.2), fill=INK)
+d.ellipse(box(34, 22, 3.2, 3.2), fill=INK)
+d.arc([p(17, 25), p(33, 38)], 40, 150, fill=INK, width=round(2.6 * u))
+im.resize((256, 256), Image.LANCZOS).save(Path('public') / 'favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)])

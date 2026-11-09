@@ -377,6 +377,17 @@ ol {
   flex-direction: column;
   gap: 14px;
 }
+/* Phones keep the form at thumb height; with a mouse, centre hero and form as one block. */
+@media (pointer: fine) {
+  .hero {
+    flex-grow: 0;
+    margin-top: auto;
+  }
+  .start-form {
+    margin: 24px 0 auto;
+    padding-bottom: 60px; /* balances the top bar so the block sits optically centred */
+  }
+}
 .name-block {
   display: flex;
   flex-direction: column;
