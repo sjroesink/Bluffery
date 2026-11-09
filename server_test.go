@@ -197,3 +197,65 @@ func TestSkipQuestion(t *testing.T) {
 		}
 	}
 }
+func TestLeaveAndRemoveMidGame(t *testing.T) {
+	s := setup(t)
+	_, _, extra := req(t, s, "", "/api/session", "")
+	cs, v := table(t, s)
+	b, _ := json.Marshal(Command{ID: "initial-0001", Action: "join", Name: "E", Code: v["code"].(string)})
+	_, v, _ = req(t, s, extra, "/api/command", string(b))
+	cs = append(cs, extra)
+	me := func(c string) string { _, p, _ := req(t, s, c, "/api/state", ""); return p["me"].(string) }
+	_, v = cmd(t, s, cs[0], v, "start", "")
+	_, v = cmd(t, s, cs[0], v, "deal", "")
+	if v["guesser"] != me(cs[0]) || v["totalTurns"] != float64(10) {
+		t.Fatal(v)
+	}
+	// A non-host cannot remove anyone, and the host cannot remove itself.
+	if st, _ := cmd(t, s, cs[1], v, "remove", me(cs[2])); st != 403 {
+		t.Fatal("non-host remove", st)
+	}
+	if st, _ := cmd(t, s, cs[0], v, "remove", me(cs[0])); st != 400 {
+		t.Fatal("host self-remove", st)
+	}
+	// Removing the guesser mid-turn hands the same turn slot to the next player, undealt.
+	guest := me(cs[1])
+	b, _ = json.Marshal(Command{ID: random(12), Action: "leave", Version: int(v["version"].(float64))})
+	st, x, _ := req(t, s, cs[0], "/api/command", string(b))
+	if st != 200 || x["left"] != true {
+		t.Fatal(st, x)
+	}
+	if st, _, _ := req(t, s, cs[0], "/api/state", ""); st != 404 {
+		t.Fatal("leaver still seated", st)
+	}
+	_, v, _ = req(t, s, cs[1], "/api/state", "")
+	if v["host"] != guest || v["guesser"] != guest || v["phase"] != "ready" || v["turn"] != float64(0) || v["totalTurns"] != float64(8) || len(v["players"].([]any)) != 4 {
+		t.Fatal("after host left", v)
+	}
+	// The new host removes someone during a turn; the turn continues with fewer players.
+	_, v = cmd(t, s, cs[1], v, "deal", "")
+	_, v = cmd(t, s, cs[1], v, "remove", me(cs[4]))
+	if v["guesser"] != guest || len(v["players"].([]any)) != 3 {
+		t.Fatal("after remove", v)
+	}
+	if st, _, _ := req(t, s, cs[4], "/api/state", ""); st != 404 {
+		t.Fatal("removed still seated", st)
+	}
+	// Below three players the game ends.
+	_, v = cmd(t, s, cs[1], v, "remove", me(cs[3]))
+	if v["phase"] != "finished" {
+		t.Fatal("not finished", v)
+	}
+	// The last two leave and the room disappears.
+	for _, c := range []string{cs[2], cs[1]} {
+		_, v, _ = req(t, s, c, "/api/state", "")
+		b, _ = json.Marshal(Command{ID: random(12), Action: "leave", Version: int(v["version"].(float64))})
+		if st, x, _ := req(t, s, c, "/api/command", string(b)); st != 200 {
+			t.Fatal(st, x)
+		}
+	}
+	var n int
+	s.db.QueryRow(`SELECT count(*) FROM rooms`).Scan(&n)
+	if n != 0 {
+		t.Fatal("empty room kept", n)
+	}
+}

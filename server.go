@@ -386,6 +386,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(w, status, msg)
 		return
 	}
+	if c.Action == "leave" {
+		json.NewEncoder(w).Encode(map[string]bool{"left": true})
+		return
+	}
 	room, e := s.readRoom(actor)
 	if e != nil {
 		fail(w, 404, "Geen actieve kamer gevonden.")
@@ -562,10 +566,19 @@ func (s *Server) command(actor string, c Command) (int, string) {
 			room.Version++
 		}
 	}
-	if e := saveRoom(tx, room, c.Action == "create"); e != nil {
+	if len(room.Players) == 0 {
+		_, e = tx.Exec(`DELETE FROM rooms WHERE code=?`, room.Code)
+	} else {
+		e = saveRoom(tx, room, c.Action == "create")
+	}
+	if e != nil {
 		return 503, "Opslag tijdelijk niet beschikbaar."
 	}
-	_, e = tx.Exec(`UPDATE sessions SET room=? WHERE hash=?`, room.Code, actor)
+	seat := room.Code
+	if c.Action == "leave" {
+		seat = ""
+	}
+	_, e = tx.Exec(`UPDATE sessions SET room=? WHERE hash=?`, seat, actor)
 	if e != nil {
 		return 503, "Opslag tijdelijk niet beschikbaar."
 	}
@@ -624,19 +637,21 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 		}
 		r.Skips = c.Skips
 	case "remove":
-		if !host || r.Phase != "lobby" {
-			return 403, "Verwijderen kan alleen in de lobby."
+		if !host {
+			return 403, "Alleen de host kan spelers verwijderen."
 		}
-		found := -1
-		for i, p := range r.Players {
+		target := ""
+		for _, p := range r.Players {
 			if publicID(p.ID) == c.Target && p.ID != r.Host {
-				found = i
+				target = p.ID
 			}
 		}
-		if found < 0 {
+		if target == "" {
 			return 400, "Kies een andere speler."
 		}
-		r.Players = append(r.Players[:found], r.Players[found+1:]...)
+		dropPlayer(r, target)
+	case "leave":
+		dropPlayer(r, a)
 	case "deal":
 		if a != guesser || r.Phase != "ready" {
 			return 403, "Alleen de rader kan nu uitdelen."
@@ -749,6 +764,54 @@ func (s *Server) deal(r *Room, guesser string) (int, string) {
 	r.Result = ""
 	r.Gains = nil
 	return 200, ""
+}
+
+// dropPlayer takes someone off the table at any moment. The turn order keeps
+// its round and seat, an interrupted turn is dealt again, and a turn whose
+// guesser left counts as played.
+func dropPlayer(r *Room, id string) {
+	n := len(r.Players)
+	i := 0
+	for i < n && r.Players[i].ID != id {
+		i++
+	}
+	if i == n {
+		return
+	}
+	round, seat := r.Turn/n, r.Turn%n
+	r.Players = append(r.Players[:i:i], r.Players[i+1:]...)
+	n--
+	if n == 0 {
+		return
+	}
+	if id == r.Host {
+		r.Host = r.Players[0].ID
+	}
+	if r.Phase == "lobby" || r.Phase == "finished" {
+		return
+	}
+	guesserLeft := i == seat
+	if i < seat {
+		seat--
+	}
+	r.Turn = round*n + seat
+	broken := r.Phase == "playing" && (guesserLeft || r.Roles[id] == "blue")
+	delete(r.Roles, id)
+	delete(r.Revealed, id)
+	delete(r.Kept, id)
+	delete(r.Gains, id)
+	if broken || (r.Phase == "settled" && guesserLeft) {
+		r.Phase = "ready"
+	}
+	if n < 3 || r.Turn >= n*r.Turns {
+		r.Phase = "finished"
+	}
+	if r.Phase != "playing" && r.Phase != "settled" {
+		r.Question = nil
+		r.Roles = nil
+		r.Revealed = nil
+		r.Kept = nil
+	}
 }
 func redCount(r Room) int {
 	n := 0

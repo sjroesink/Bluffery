@@ -231,3 +231,63 @@ test("host allows skipping and the guesser swaps the question until the first Bl
     await Promise.all(ctx.map((c) => c.close()));
   }
 });
+
+test("players leave and the host removes someone mid-game", async ({
+  browser,
+}) => {
+  const ctx = await Promise.all(
+    [0, 1, 2, 3, 4, 5].map(() =>
+      browser.newContext({ viewport: { width: 320, height: 760 } }),
+    ),
+  );
+  const pages = await Promise.all(ctx.map((c) => c.newPage()));
+  try {
+    await pages[0].goto("/");
+    await pages[0].getByLabel("Je naam").fill("Host");
+    await pages[0].getByRole("button", { name: "Nieuwe tafel" }).click();
+    const code = await pages[0].getByTestId("room-code").innerText();
+    for (let i = 1; i < 6; i++) {
+      await pages[i].goto("/?code=" + code);
+      await pages[i].getByLabel("Je naam").fill("Speler " + i);
+      await pages[i].getByRole("button", { name: "Doe mee" }).click();
+      await expect(pages[i].getByText("Wachten op de host")).toBeVisible();
+    }
+    // Leaving from the lobby.
+    await pages[5].getByRole("button", { name: "Tafel verlaten" }).click();
+    await pages[5].getByRole("button", { name: "Verlaten", exact: true }).click();
+    await expect(pages[5].getByRole("button", { name: "Nieuwe tafel" })).toBeVisible();
+    await expect(pages[5].getByRole("alert")).toHaveCount(0);
+    await expect(pages[0].getByText("5 / 10", { exact: true })).toBeVisible();
+    await pages[0].getByRole("button", { name: "Start", exact: true }).click();
+    await pages[0].getByRole("button", { name: "Uitdelen", exact: true }).click();
+    await expect(pages[0].getByTestId("pot")).toBeVisible();
+    // The host removes a player during the turn, with a second tap to confirm.
+    await pages[0].getByRole("button", { name: "Stand" }).click();
+    await pages[0].getByRole("button", { name: "Speler 4 verwijderen" }).click();
+    await pages[0].getByRole("button", { name: "Speler 4 echt verwijderen" }).click();
+    await expect(pages[4].getByRole("alert")).toHaveText("Je zit niet meer aan deze tafel.");
+    await expect(pages[4].getByRole("button", { name: "Nieuwe tafel" })).toBeVisible();
+    await expect(pages[0].locator(".sheet .standings li")).toHaveCount(4);
+    // A player leaves mid-game through the standings sheet.
+    await pages[0].getByRole("button", { name: "Sluiten" }).click();
+    await expect(pages[0].getByText(/^Beurt 1 \/ (8|4)$/)).toBeVisible();
+    await expect(pages[1].getByTestId("private-answer").or(pages[1].getByText("Wachten op uitdelen"))).toBeVisible();
+    // Non-guessers have no top bar while a question is out, so finish the turn first.
+    if (await pages[0].getByRole("button", { name: /^Stop & pak/ }).isVisible()) {
+      await pages[0].getByRole("button", { name: /^Stop & pak/ }).click();
+      await pages[0].getByRole("button", { name: "Verder" }).click();
+    }
+    await pages[3].getByRole("button", { name: "Stand" }).click();
+    await pages[3].getByRole("button", { name: "Tafel verlaten" }).click();
+    await pages[3].getByRole("button", { name: "Verlaten", exact: true }).click();
+    await expect(pages[3].getByRole("button", { name: "Nieuwe tafel" })).toBeVisible();
+    await expect(pages[0].getByText("Beurt 1 / 6")).toBeVisible();
+    // Down to two players the game ends.
+    await pages[0].getByRole("button", { name: "Stand" }).click();
+    await pages[0].getByRole("button", { name: "Speler 2 verwijderen" }).click();
+    await pages[0].getByRole("button", { name: "Speler 2 echt verwijderen" }).click();
+    await expect(pages[1].getByRole("heading", { name: / (wint|winnen)$/ })).toBeVisible();
+  } finally {
+    await Promise.all(ctx.map((c) => c.close()));
+  }
+});

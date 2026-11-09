@@ -1548,6 +1548,30 @@ ol {
 .standings .score {
   font: 800 20px var(--display);
 }
+.standings .kick {
+  min-width: 36px;
+  height: 36px;
+  margin-right: -8px;
+  border-radius: 18px;
+  background: var(--face);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 800 14px var(--display);
+  transition: background 0.15s, padding 0.15s;
+}
+.standings .kick.armed {
+  padding: 0 14px;
+  background: var(--orange);
+  color: var(--ink);
+}
+.standings .kick:disabled {
+  opacity: 0.4;
+}
+.sheet .btn.small {
+  justify-content: center;
+}
 
 /* Finished */
 .winner {

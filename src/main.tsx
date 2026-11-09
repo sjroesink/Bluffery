@@ -187,8 +187,10 @@ const icons = {
   plus: "M12 5v14M5 12h14",
   minus: "M5 12h14",
   refresh: "M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5",
+  exit: "M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H10",
 };
 const maxTurns = 5;
+const gone = "Je zit niet meer aan deze tafel.";
 function App() {
   const [state, setState] = useState<State | null>(null),
     [name, setName] = useState(""),
@@ -206,7 +208,6 @@ function App() {
     [qr, setQr] = useState(""),
     [waiting, setWaiting] = useState<ServiceWorker | null>(null),
     [install, setInstall] = useState<any>(null),
-    [lost, setLost] = useState(false),
     [recoveryBlocked, setRecoveryBlocked] = useState(false),
     [streamConnected, setStreamConnected] = useState(false);
   const alive = useRef(true),
@@ -221,7 +222,16 @@ function App() {
     applied.current = seq;
     latest.current = v;
     setState(v);
-    setLost(false);
+  }
+  // Back to the start screen after leaving, being removed or an expired session.
+  function dropped(message = "") {
+    applied.current = ++sequence.current;
+    latest.current = null;
+    setState(null);
+    setSheet(null);
+    setCode("");
+    setError(message);
+    void fetch("/api/session", { cache: "no-store" }).catch(() => {});
   }
   async function refresh(initial = false) {
     const seq = ++sequence.current;
@@ -233,12 +243,8 @@ function App() {
         !initial &&
         seq >= applied.current &&
         latest.current
-      ) {
-        setLost(true);
-        setError(
-          "Je sessie of kamer is verlopen of je bent verwijderd. Open opnieuw na het wissen van de sitegegevens om aan te sluiten.",
-        );
-      }
+      )
+        dropped(gone);
     } catch {
       /* Online state and pending actions remain intact. */
     }
@@ -281,7 +287,7 @@ function App() {
     };
   }, []);
   useEffect(() => {
-    if (!state?.code || !ready || !online || lost) return;
+    if (!state?.code || !ready || !online) return;
     let current = true;
     const stream = new EventSource("/api/events");
     stream.onopen = () => {
@@ -292,10 +298,8 @@ function App() {
     });
     stream.addEventListener("expired", () => {
       if (!current) return;
-      setLost(true);
-      setStreamConnected(false);
-      setError("Je sessie of kamer is verlopen of je bent verwijderd.");
       stream.close();
+      dropped(gone);
     });
     stream.onerror = () => {
       if (current) setStreamConnected(false);
@@ -305,7 +309,7 @@ function App() {
       stream.close();
       setStreamConnected(false);
     };
-  }, [state?.code, ready, online, lost]);
+  }, [state?.code, ready, online]);
   useEffect(() => {
     if (!state?.code) return;
     QRCode.toDataURL(`${location.origin}/?code=${state.code}`, {
@@ -356,7 +360,7 @@ function App() {
     };
   }, []);
   async function send(intent: Intent) {
-    if (busy || !navigator.onLine || lost) return;
+    if (busy || !navigator.onLine) return;
     setBusy(true);
     setError("");
     const seq = ++sequence.current;
@@ -388,7 +392,8 @@ function App() {
         await refresh();
         return;
       }
-      accept(v, seq);
+      if (intent.action === "leave") dropped();
+      else accept(v, seq);
     } catch (e) {
       if (alive.current)
         setError(
@@ -418,7 +423,6 @@ function App() {
     busy ||
     !online ||
     !ready ||
-    lost ||
     !!pending ||
     recoveryBlocked ||
     (!!state && !streamConnected);
@@ -426,7 +430,8 @@ function App() {
     guesser = state?.guesser === state?.me;
   const who = (id?: string) =>
     state?.players.find((p) => p.id === id)?.name || "de rader";
-  const [sheet, setSheet] = useState<"help" | "stand" | null>(null),
+  const [sheet, setSheet] = useState<"help" | "stand" | "leave" | null>(null),
+    [kick, setKick] = useState(""),
     [outcome, setOutcome] = useState<string | null>(null),
     [veiled, setVeiled] = useState(false),
     [copied, setCopied] = useState(false),
@@ -565,6 +570,15 @@ function App() {
     <div className="topbar">
       <Face {...faces.mark} size={32} look={3} />
       <span className="wordmark">bluffery</span>
+      {state && (
+        <button
+          className="icon-btn"
+          aria-label="Tafel verlaten"
+          onClick={() => setSheet("leave")}
+        >
+          <Icon d={icons.exit} />
+        </button>
+      )}
       {helpButton}
     </div>
   );
@@ -596,7 +610,7 @@ function App() {
   );
   const notices = (
     <>
-      {state && online && !streamConnected && !lost && (
+      {state && online && !streamConnected && (
         <div className="notice" role="status">
           Verbinding herstellen…
         </div>
@@ -1219,7 +1233,13 @@ function App() {
         {screen}
       </main>
       {sheet && (
-        <div className="backdrop" onClick={() => setSheet(null)}>
+        <div
+          className="backdrop"
+          onClick={() => {
+            setSheet(null);
+            setKick("");
+          }}
+        >
           <section
             className="sheet"
             role="dialog"
@@ -1230,13 +1250,20 @@ function App() {
           >
             <div className="sheet-head">
               <h2 id="sheet-title">
-                {sheet === "help" ? "Zo speel je" : "Stand"}
+                {sheet === "help"
+                  ? "Zo speel je"
+                  : sheet === "stand"
+                    ? "Stand"
+                    : "Tafel verlaten?"}
               </h2>
               <button
                 className="icon-btn"
                 aria-label="Sluiten"
                 autoFocus
-                onClick={() => setSheet(null)}
+                onClick={() => {
+                  setSheet(null);
+                  setKick("");
+                }}
               >
                 <Icon d={icons.close} />
               </button>
@@ -1253,10 +1280,59 @@ function App() {
                           state?.phase !== "finished" && <small>raadt nu</small>}
                       </span>
                       <span className="score">{p.score}</span>
+                      {host && p.id !== state?.host && (
+                        <button
+                          className={"kick" + (kick === p.id ? " armed" : "")}
+                          aria-label={
+                            kick === p.id
+                              ? `${p.name} echt verwijderen`
+                              : `${p.name} verwijderen`
+                          }
+                          disabled={disabled}
+                          onClick={() => {
+                            if (kick !== p.id) return setKick(p.id);
+                            setKick("");
+                            action("remove", { target: p.id });
+                          }}
+                        >
+                          {kick === p.id ? (
+                            "Eruit"
+                          ) : (
+                            <Icon d={icons.close} size={14} />
+                          )}
+                        </button>
+                      )}
                     </li>
                   ))}
                 </ol>
                 {host && state?.phase !== "finished" && skipToggle}
+                <button
+                  className="btn small ghost"
+                  onClick={() => {
+                    setKick("");
+                    setSheet("leave");
+                  }}
+                >
+                  <Icon d={icons.exit} size={18} />
+                  Tafel verlaten
+                </button>
+              </>
+            ) : sheet === "leave" ? (
+              <>
+                {host && state && state.players.length > 1 && (
+                  <p>
+                    {state.players.find((p) => p.id !== state.me)?.name} wordt
+                    host.
+                  </p>
+                )}
+                <button
+                  className={"btn" + (busy ? " loading" : "")}
+                  aria-busy={busy}
+                  disabled={disabled}
+                  onClick={() => action("leave")}
+                >
+                  Verlaten
+                </button>
               </>
             ) : (
               <>
