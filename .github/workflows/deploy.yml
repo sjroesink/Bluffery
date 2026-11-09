@@ -1,0 +1,106 @@
+name: Deploy Bluffery
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-vissig-production
+  cancel-in-progress: false
+
+jobs:
+  test-and-deploy:
+    name: Test and deploy bluffery.roesink.dev
+    if: github.repository == 'sjroesink/Bluffery'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out triggering revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: 26
+          cache: npm
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version: 1.27.3
+      - name: Validate, build and test
+        env:
+          GOTELEMETRY: 'off'
+        run: |
+          set -euo pipefail
+          npm ci
+          npm run build
+          node --test scripts/catalog.test.mjs
+          go test -race ./...
+          go vet ./...
+          CGO_ENABLED=0 go build -trimpath -o "$RUNNER_TEMP/bluffery" .
+      - name: Production browser regression on disposable fixture
+        run: |
+          set -euo pipefail
+          npx playwright install --with-deps chromium
+          fixture_dir="$(mktemp -d "$RUNNER_TEMP/bluffery-e2e.XXXXXX")"
+          LISTEN_ADDR=127.0.0.1:18088 DATA_DIR="$fixture_dir" \
+            PUBLIC_BASE_URL=http://127.0.0.1:18088 BLUFFERY_DEV_FIXTURES=1 \
+            "$RUNNER_TEMP/bluffery" > "$RUNNER_TEMP/bluffery-e2e-server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=false
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:18088/healthz >/dev/null; then ready=true; break; fi
+            kill -0 "$server_pid"
+            sleep 1
+          done
+          test "$ready" = true
+          E2E_BASE_URL=http://127.0.0.1:18088 npm run test:e2e
+      - name: Verify production Docker build
+        run: docker build --tag bluffery:ci .
+      # The Unraid stack keeps its original "vissig" name, storage and sessions.
+      - name: Trigger authenticated deployment
+        env:
+          REPOSITORY_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            token="$(curl --fail --silent --show-error \
+              --header "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+              "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=deploy.roes.ink" | jq -er .value)"
+            test -n "$token"
+            response_file="$(mktemp)"
+            http_code="$(curl --silent --show-error --max-time 125 --request POST \
+              --header "Authorization: Bearer ${token}" \
+              --header "X-GitHub-Token: ${REPOSITORY_TOKEN}" \
+              --header 'Content-Type: application/json' \
+              --data '{"stack":"vissig"}' --output "$response_file" \
+              --write-out '%{http_code}' https://deploy.roes.ink/hooks/deploy || true)"
+            unset token
+            response="$(<"$response_file")"
+            rm -f "$response_file"
+            if [ "$http_code" = 200 ]; then
+              printf '%s\n' "$response"
+              if printf '%s\n' "$response" | grep -Fxq "Commit: ${GITHUB_SHA}" && \
+                 printf '%s\n' "$response" | grep -Fxq 'Deploy voltooid: vissig'; then exit 0; fi
+              if superseded="$(printf '%s\n' "$response" | grep -Ex "Deploy overgeslagen: vissig ${GITHUB_SHA} vervangen door [0-9a-f]{40}")" && \
+                 [ "$(printf '%s\n' "$superseded" | wc -l)" -eq 1 ] && \
+                 [ "${superseded##* }" != "$GITHUB_SHA" ]; then exit 0; fi
+              printf '%s\n' 'Unexpected deployment response.' >&2
+              exit 1
+            fi
+            case "$http_code" in
+              000|409|429|500|502|503|504|520|522|524) ;;
+              *) printf 'Deployment rejected (HTTP %s).\n' "$http_code" >&2; exit 1 ;;
+            esac
+            printf 'Deployment pending (HTTP %s, attempt %s/30).\n' "$http_code" "$attempt"
+            sleep 10
+          done
+          printf '%s\n' 'Deployment did not reach a verified result.' >&2
+          exit 1
