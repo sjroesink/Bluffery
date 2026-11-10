@@ -77,7 +77,8 @@ async function speak(q) {
     });
     if (res.ok) return Buffer.from(await res.arrayBuffer());
     const body = (await res.text()).slice(0, 300);
-    if ((res.status === 429 || res.status >= 500) && attempt < 5) {
+    // 409 already_running: de stem wordt bij eerste gebruik aan het account toegevoegd.
+    if ((res.status === 409 || res.status === 429 || res.status >= 500) && attempt < 5) {
       const wait = Number(res.headers.get("retry-after")) * 1000 || 2000 * attempt;
       await new Promise((r) => setTimeout(r, wait));
       continue;
@@ -87,16 +88,19 @@ async function speak(q) {
 }
 
 // Twee tegelijk past binnen de gelijktijdigheidslimiet van elk ElevenLabs-abonnement.
+// De eerste vraag gaat alleen, zodat ElevenLabs de stem eenmalig kan toevoegen.
 let next = 0;
 let done = 0;
-async function worker() {
-  while (next < todo.length) {
-    const q = todo[next++];
-    const audio = await speak(q);
-    const target = `${dir}/${q.id}.mp3`;
-    await writeFile(target + ".pending", audio);
-    await rename(target + ".pending", target);
-    console.log(`[${++done}/${todo.length}] ${q.id} ${(audio.length / 1024).toFixed(0)} kB`);
-  }
+async function one() {
+  const q = todo[next++];
+  const audio = await speak(q);
+  const target = `${dir}/${q.id}.mp3`;
+  await writeFile(target + ".pending", audio);
+  await rename(target + ".pending", target);
+  console.log(`[${++done}/${todo.length}] ${q.id} ${(audio.length / 1024).toFixed(0)} kB`);
 }
+async function worker() {
+  while (next < todo.length) await one();
+}
+await one();
 await Promise.all([worker(), worker()]);
