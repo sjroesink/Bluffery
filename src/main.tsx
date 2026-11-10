@@ -21,6 +21,7 @@ type State = {
   turns: number;
   totalTurns: number;
   skips?: boolean;
+  audio?: string;
   question?: string;
   category?: string;
   answer?: string;

@@ -8,3 +8,4 @@ playwright-report/
 *.sqlite-shm
 /bluffery
 .env
+internal/catalog/audio/*.pending

@@ -65,6 +65,30 @@ ID = `q_` + eerste24 hex SHA256(question + newline + firstSourceURL). Bestaande 
 
 Bewaar naast een gereviewd pakket een private `provenance.json` met bronfamilie, originele record-/revisie-ID's, opgehaalde respons-SHA256, ophaaldatum en reviewbewijs per vraag-ID. Dit is reviewmateriaal, geen extra runtime-schema of publieke antwoordbank; de parent controleert het tegen de definitieve seed. Alleen de backend-seed wordt ingebed. Het importcommando valideert ook losse reviewdeelsets; succesvolle validatie van minder dan20 vragen betekent niet dat zo'n seed kan opstarten. De app toont generieke links naar WikiDYK, Wikipedia Unusual articles en Open Trivia Database in ‘Spel & app’, maar vraagspecifieke bronnen en `rightsNote` uitsluitend na afrekening. Geen algemene CC0-/vrije-licentieclaim: de rechtennotitie volgt de werkelijk beoordeelde bron; een code-licentie van een datasetrepository geldt niet automatisch voor Wikipedia-afgeleide tekst.
 
+## Vragen voorlezen (ElevenLabs)
+
+`scripts/speak.mjs` genereert per vraag een mp3 in `internal/catalog/audio/<id>.mp3`. Die bestanden worden gecommit en in de binary ingebed. De server serveert ze op `/audio/<id>.mp3` en zet het pad als `audio` in de state zodra er een uitspraak voor de huidige vraag bestaat. De service worker cachet ze niet. ElevenLabs wordt alleen tijdens het genereren aangeroepen, nooit tijdens het spelen.
+
+Maak in de repo-root een `.env`-bestand (staat in `.gitignore` en `.dockerignore`):
+
+```sh
+ELEVENLABS_API_KEY=...            # API-sleutel met Text to Speech-rechten
+ELEVENLABS_VOICE_ID=...           # voice ID, niet de naam
+# optioneel
+ELEVENLABS_MODEL_ID=eleven_multilingual_v2
+ELEVENLABS_OUTPUT_FORMAT=mp3_44100_64
+```
+
+```sh
+node scripts/speak.mjs --dry-run   # hoeveel vragen en tekens nog ontbreken
+node scripts/speak.mjs --limit 5   # proefje
+node scripts/speak.mjs             # de rest; bestaande mp3's worden overgeslagen
+node scripts/speak.mjs --only q_…  # één vraag opnieuw, bv. na stemwissel
+node scripts/speak.mjs --prune     # mp3's van vervallen vraag-ID's opruimen
+```
+
+Een vraag-ID verandert als de vraagtekst verandert. Na een catalogusimport kun je het script dus gewoon opnieuw draaien. Voor een andere stem verwijder je de mp3's en genereer je ze opnieuw.
+
 ## PWA en privacygrens
 
 Eigen opaque PNG192/512, maskable512 en Apple180; manifest en productie-SW. De build genereert een gesloten allowlist van alleen publieke shellbestanden, met hash van assets én worker-template als cache-identiteit. Navigaties zijn aan bijpassende HTML/assets gepind. Maximaal één vorige buildcache blijft bewaard voor open tabs. **Geen API, SSE, antwoord, rol, roomstate, cookie of credential in CacheStorage.** API-misses krijgen nooit SPA-HTML. `sw.js`: `Cache-Control: no-cache, no-store` én `Cloudflare-CDN-Cache-Control: no-store`.

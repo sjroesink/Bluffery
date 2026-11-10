@@ -432,6 +432,9 @@ func project(r Room, a string) map[string]any {
 	if r.Question != nil {
 		v["question"] = r.Question.Question
 		v["category"] = r.Question.Category
+		if audio := questionAudio(r.Question.ID); audio != "" {
+			v["audio"] = audio
+		}
 		v["provisional"] = redCount(r)
 		revealed := map[string]string{}
 		kept := map[string]bool{}

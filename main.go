@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"embed"
 	"fmt"
@@ -20,6 +21,18 @@ import (
 //go:embed dist
 var publicFS embed.FS
 
+// Uitspraken per vraag-ID, gegenereerd door scripts/speak.mjs.
+//
+//go:embed all:internal/catalog/audio
+var audioFS embed.FS
+
+func questionAudio(id string) string {
+	if _, e := fs.Stat(audioFS, "internal/catalog/audio/"+id+".mp3"); e != nil {
+		return ""
+	}
+	return "/audio/" + id + ".mp3"
+}
+
 func publicHandler() http.Handler {
 	root, _ := fs.Sub(publicFS, "dist")
 	_ = root
@@ -34,6 +47,18 @@ func publicHandler() http.Handler {
 		}
 		if strings.Contains(path, "..") || strings.HasSuffix(path, "/") {
 			http.NotFound(w, r)
+			return
+		}
+		if name, ok := strings.CutPrefix(path, "/audio/"); ok {
+			id, mp3 := strings.CutSuffix(name, ".mp3")
+			if !mp3 || questionAudio(id) != path {
+				http.NotFound(w, r)
+				return
+			}
+			data, _ := audioFS.ReadFile("internal/catalog/audio/" + name)
+			w.Header().Set("Content-Type", "audio/mpeg")
+			w.Header().Set("Cache-Control", "public, max-age=86400")
+			http.ServeContent(w, r, path, time.Time{}, bytes.NewReader(data))
 			return
 		}
 		if _, e := fs.Stat(root, strings.TrimPrefix(path, "/")); e != nil {
