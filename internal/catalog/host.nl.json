@@ -1,0 +1,93 @@
+{
+  "characters": [
+    { "id": "baron", "name": "Baron von Bluf", "color": "#e0b43a", "accessory": "monocle" },
+    { "id": "truus", "name": "Tante Truus", "color": "#ef6fa8", "accessory": "bow" },
+    { "id": "kletskous", "name": "Kapitein Kletskous", "color": "#22b3a3", "accessory": "cap" },
+    { "id": "jokkebrok", "name": "Juffrouw Jokkebrok", "color": "#9b6cf0", "accessory": "glasses" },
+    { "id": "smoes", "name": "Meneer Smoes", "color": "#3f9e5a", "accessory": "tophat" },
+    { "id": "fabel", "name": "Opa Fabel", "color": "#b9825a", "accessory": "moustache" },
+    { "id": "glimlach", "name": "Gravin Glimlach", "color": "#e2505f", "accessory": "crown" },
+    { "id": "praatjes", "name": "Professor Praatjes", "color": "#4aa3e8", "accessory": "glasses" },
+    { "id": "mysterie", "name": "Madame Mysterie", "color": "#aab3c8", "accessory": "tophat" },
+    { "id": "draai", "name": "Dokter Draai", "color": "#9bd34a", "accessory": "monocle" },
+    { "id": "fluister", "name": "Mevrouw Fluister", "color": "#ffb38a", "accessory": "bow" },
+    { "id": "sjonnie", "name": "Sjonnie Schijnheilig", "color": "#c2449c", "accessory": "halo" }
+  ],
+  "lines": [
+    { "id": "welcome.1", "moment": "welcome", "text": "Goedenavond, goedemiddag of goedemorgen, wat het ook is: welkom bij Bluffery!" },
+    { "id": "welcome.2", "moment": "welcome", "text": "Welkom bij Bluffery, de show waarin liegen mag. Sterker nog: het wordt beloond." },
+    { "id": "welcome.3", "moment": "welcome", "text": "Daar zijn we weer! Welkom bij Bluffery. Pak je telefoon en schuif aan." },
+
+    { "id": "join.1", "moment": "join", "text": "is erbij!" },
+    { "id": "join.2", "moment": "join", "text": "schuift aan. Welkom!" },
+    { "id": "join.3", "moment": "join", "text": "is binnen. Kijk die uitstraling." },
+    { "id": "join.4", "moment": "join", "text": "neemt plaats. Ik vertrouw het nu al niet." },
+
+    { "id": "start.1", "moment": "start", "text": "Iedereen is binnen. Dan gaan we beginnen!" },
+    { "id": "start.2", "moment": "start", "text": "Telefoons klaar? Leugens klaar? Daar gaan we!" },
+    { "id": "start.3", "moment": "start", "text": "Het spel begint. Onthoud: niemand aan deze tafel is te vertrouwen." },
+
+    { "id": "turn.pre.1", "moment": "turn.pre", "text": "De volgende rader is…" },
+    { "id": "turn.pre.2", "moment": "turn.pre", "text": "Alle ogen zijn nu gericht op…" },
+    { "id": "turn.pre.3", "moment": "turn.pre", "text": "En nu mag raden…" },
+
+    { "id": "turn.post.1", "moment": "turn.post", "text": "Jij gaat de bluffers ontmaskeren. Druk maar op uitdelen." },
+    { "id": "turn.post.2", "moment": "turn.post", "text": "Succes. Je gaat het nodig hebben." },
+    { "id": "turn.post.3", "moment": "turn.post", "text": "Laat je niets wijsmaken!" },
+
+    { "id": "question.pre.1", "moment": "question.pre", "text": "Luister goed, hier komt de vraag." },
+    { "id": "question.pre.2", "moment": "question.pre", "text": "De vraag van deze ronde." },
+    { "id": "question.pre.3", "moment": "question.pre", "text": "Daar gaat ie." },
+
+    { "id": "writing.1", "moment": "writing", "text": "Bluffers, verzin iets overtuigends. Eerlijke speler: jij weet het antwoord al." },
+    { "id": "writing.2", "moment": "writing", "text": "Typ je antwoord op je telefoon. Hoe geloofwaardiger, hoe beter." },
+    { "id": "writing.3", "moment": "writing", "text": "De duimen gaan los. Verzin maar iets moois." },
+
+    { "id": "all-in.1", "moment": "all-in", "text": "Alle antwoorden zijn binnen! Eens kijken wat we hebben." },
+    { "id": "all-in.2", "moment": "all-in", "text": "Iedereen heeft iets ingestuurd. Daar komen ze." },
+    { "id": "all-in.3", "moment": "all-in", "text": "De antwoorden liggen op tafel." },
+
+    { "id": "present.1", "moment": "present", "text": "Het antwoord van…" },
+    { "id": "present.2", "moment": "present", "text": "En dit zegt…" },
+    { "id": "present.3", "moment": "present", "text": "Dan…" },
+
+    { "id": "judge.1", "moment": "judge", "text": "Rader, wie blufft er? Druk op Bluf bij wie je niet gelooft." },
+    { "id": "judge.2", "moment": "judge", "text": "Aan jou, rader. Wie liegt hier tegen je?" },
+    { "id": "judge.3", "moment": "judge", "text": "Tijd om iemand te ontmaskeren." },
+
+    { "id": "skip.1", "moment": "skip", "text": "Een andere vraag? Prima, we hebben er genoeg." },
+    { "id": "skip.2", "moment": "skip", "text": "Te makkelijk? Dan krijg je een nieuwe." },
+
+    { "id": "caught.1", "moment": "caught", "text": "Betrapt! Dat was inderdaad gebluft." },
+    { "id": "caught.2", "moment": "caught", "text": "Hebbes! Weer een bluffer minder." },
+    { "id": "caught.3", "moment": "caught", "text": "Ontmaskerd! Wat een speurneus." },
+    { "id": "caught.4", "moment": "caught", "text": "Raak! Die leugen hield geen stand." },
+
+    { "id": "bust.1", "moment": "bust", "text": "Oei! Dat was de eerlijke speler. De pot is leeg." },
+    { "id": "bust.2", "moment": "bust", "text": "Mis! Die sprak de waarheid. Alles kwijt." },
+    { "id": "bust.3", "moment": "bust", "text": "Au. Dat was nou net het echte antwoord." },
+
+    { "id": "last-blue.1", "moment": "last-blue", "text": "Alle bluffers ontmaskerd! Daar hoort een bonuspunt bij." },
+    { "id": "last-blue.2", "moment": "last-blue", "text": "Perfect gespeeld: alleen de waarheid blijft over." },
+
+    { "id": "bank.1", "moment": "bank", "text": "Verstandig. De rader pakt de punten en stopt." },
+    { "id": "bank.2", "moment": "bank", "text": "Niet te gretig worden. De rader stopt." },
+    { "id": "bank.3", "moment": "bank", "text": "Zekerheid boven alles. De punten zijn binnen." },
+
+    { "id": "answer.pre.1", "moment": "answer.pre", "text": "Het echte antwoord was…" },
+    { "id": "answer.pre.2", "moment": "answer.pre", "text": "En het juiste antwoord is…" },
+    { "id": "answer.pre.3", "moment": "answer.pre", "text": "De waarheid, en niets dan de waarheid." },
+
+    { "id": "leader.pre.1", "moment": "leader.pre", "text": "Aan kop staat nu…" },
+    { "id": "leader.pre.2", "moment": "leader.pre", "text": "De ranglijst wordt aangevoerd door…" },
+    { "id": "leader.pre.3", "moment": "leader.pre", "text": "Wie staat er bovenaan? Dat is…" },
+
+    { "id": "finish.pre.1", "moment": "finish.pre", "text": "Het spel zit erop. En de winnaar is…" },
+    { "id": "finish.pre.2", "moment": "finish.pre", "text": "Tromgeroffel… De grootste bluffer van vandaag is…" },
+    { "id": "finish.pre.3", "moment": "finish.pre", "text": "We hebben een winnaar…" },
+
+    { "id": "finish.post.1", "moment": "finish.post", "text": "Gefeliciteerd! Een applaus voor jezelf." },
+    { "id": "finish.post.2", "moment": "finish.post", "text": "Wat een prestatie. Niemand gelooft je ooit nog." },
+    { "id": "finish.post.3", "moment": "finish.post", "text": "Proficiat! Nog een potje?" }
+  ]
+}

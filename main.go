@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"regexp"
 	"strings"
 	"syscall"
 	"time"
@@ -25,6 +26,9 @@ var publicFS embed.FS
 //
 //go:embed all:internal/catalog/audio
 var audioFS embed.FS
+
+// audioRE laat alleen vraag-ID's en presentatorclips (audio/host) door.
+var audioRE = regexp.MustCompile(`^(q_[0-9a-f]{24}|host/[a-z0-9.-]{1,64})\.mp3$`)
 
 func questionAudio(id string) string {
 	if _, e := fs.Stat(audioFS, "internal/catalog/audio/"+id+".mp3"); e != nil {
@@ -42,7 +46,7 @@ func publicHandler() http.Handler {
 			return
 		}
 		path := r.URL.Path
-		if path == "/" {
+		if path == "/" || path == "/tv" {
 			path = "/index.html"
 		}
 		if strings.Contains(path, "..") || strings.HasSuffix(path, "/") {
@@ -50,12 +54,11 @@ func publicHandler() http.Handler {
 			return
 		}
 		if name, ok := strings.CutPrefix(path, "/audio/"); ok {
-			id, mp3 := strings.CutSuffix(name, ".mp3")
-			if !mp3 || questionAudio(id) != path {
+			data, e := audioFS.ReadFile("internal/catalog/audio/" + name)
+			if !audioRE.MatchString(name) || e != nil {
 				http.NotFound(w, r)
 				return
 			}
-			data, _ := audioFS.ReadFile("internal/catalog/audio/" + name)
 			w.Header().Set("Content-Type", "audio/mpeg")
 			w.Header().Set("Cache-Control", "public, max-age=86400")
 			http.ServeContent(w, r, path, time.Time{}, bytes.NewReader(data))

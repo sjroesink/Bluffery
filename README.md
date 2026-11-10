@@ -89,6 +89,22 @@ node scripts/speak.mjs --prune     # mp3's van vervallen vraag-ID's opruimen
 
 Een vraag-ID verandert als de vraagtekst verandert. Na een catalogusimport kun je het script dus gewoon opnieuw draaien. Voor een andere stem verwijder je de mp3's en genereer je ze opnieuw.
 
+### Tv-modus: presentator en personages
+
+In de tv-modus kijkt een tv mee via `/tv`. Hij leest de vraag voor en praat het spel aan elkaar met vooraf ingesproken zinnen. Die zinnen en de twaalf personages staan in `internal/catalog/host.nl.json`. Elk moment (`turn.pre`, `caught`, …) heeft een paar varianten; de tv kiest er willekeurig een en noemt spelers bij hun personagenaam. Getypte antwoorden worden alleen getoond, niet uitgesproken.
+
+```sh
+ELEVENLABS_HOST_VOICE_ID=...       # optioneel: andere stem voor de presentator
+```
+
+```sh
+node scripts/speak.mjs --set host --dry-run   # hoeveel zinnen en tekens nog ontbreken
+node scripts/speak.mjs --set host             # schrijft internal/catalog/audio/host/<id>.mp3
+node scripts/speak.mjs --set host --prune     # mp3's van verwijderde zinnen opruimen
+```
+
+`audio/host/manifest.json` onthoudt welke tekst bij elke mp3 hoort. Pas je een zin aan, dan telt die vanzelf weer als te genereren. Ontbreekt een mp3, dan toont de tv alleen de ondertitel.
+
 ## PWA en privacygrens
 
 Eigen opaque PNG192/512, maskable512 en Apple180; manifest en productie-SW. De build genereert een gesloten allowlist van alleen publieke shellbestanden, met hash van assets én worker-template als cache-identiteit. Navigaties zijn aan bijpassende HTML/assets gepind. Maximaal één vorige buildcache blijft bewaard voor open tabs. **Geen API, SSE, antwoord, rol, roomstate, cookie of credential in CacheStorage.** API-misses krijgen nooit SPA-HTML. `sw.js`: `Cache-Control: no-cache, no-store` én `Cloudflare-CDN-Cache-Control: no-store`.

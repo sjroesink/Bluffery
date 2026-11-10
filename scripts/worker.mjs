@@ -17,7 +17,7 @@ self.addEventListener('install',e=>e.waitUntil((async()=>{const c=await caches.o
 self.addEventListener('activate',e=>e.waitUntil((async()=>{const names=(await caches.keys()).filter(k=>k.startsWith('bluffery-shell-')||k.startsWith('vissig-shell-'));const retain=names.filter(k=>k!==CACHE).slice(-1);await Promise.all(names.filter(k=>k!==CACHE&&!retain.includes(k)).map(k=>caches.delete(k)));await self.clients.claim()})()));
 self.addEventListener('message',e=>{if(e.data?.type==='ACTIVATE')self.skipWaiting()});
 self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin||e.request.method!=='GET'||u.pathname.startsWith('/api/')||u.pathname==='/healthz')return;
-if(e.request.mode==='navigate'&&u.pathname==='/'){e.respondWith(caches.open(CACHE).then(c=>c.match('/index.html')));return}
+if(e.request.mode==='navigate'&&(u.pathname==='/'||u.pathname==='/tv')){e.respondWith(caches.open(CACHE).then(c=>c.match('/index.html')));return}
 if(!u.search&&PUBLIC.includes(u.pathname)){e.respondWith(caches.open(CACHE).then(async c=>(await c.match(u.pathname))||fetch(e.request)));}});
 `;
 let hash = createHash("sha256").update(template);

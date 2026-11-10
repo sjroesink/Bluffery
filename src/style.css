@@ -1768,3 +1768,431 @@ ol {
   line-height: 1.45;
   color: #dce3ff;
 }
+
+/* Tv-modus op de telefoon */
+.cast {
+  display: grid;
+  gap: 10px;
+}
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 6px;
+}
+.cast-pick {
+  aspect-ratio: 1 / 1.2;
+  border-radius: 14px;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 2px transparent;
+  transition:
+    transform 0.2s cubic-bezier(0.2, 1.8, 0.4, 1),
+    box-shadow 0.2s;
+}
+.cast-pick .face {
+  width: 80%;
+  height: auto;
+}
+.cast-pick[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 3px var(--text);
+  transform: scale(1.06);
+}
+.cast-pick:disabled:not([aria-pressed="true"]) {
+  opacity: 0.3;
+}
+.tv-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.said {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.row.caught .said,
+.row.honest .said {
+  color: inherit;
+}
+.answer-form {
+  display: grid;
+  gap: 10px;
+}
+textarea.field {
+  height: auto;
+  min-height: 72px;
+  padding: 14px 18px;
+  resize: none;
+  font-family: inherit;
+}
+.theme-red textarea.field,
+.theme-blue textarea.field {
+  border-color: transparent;
+}
+.theme-red .answer-form .btn {
+  background: var(--ink);
+  color: var(--orange);
+}
+.theme-blue .answer-form .btn {
+  background: #fff;
+  color: var(--blue);
+}
+.sent-answer {
+  border-radius: 24px;
+  padding: 16px 20px;
+  display: grid;
+  gap: 6px;
+  background: rgba(20, 17, 43, 0.12);
+  animation: pop 0.4s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+.sent-answer span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.sent-answer strong {
+  font: 800 22px/1.2 var(--display);
+  overflow-wrap: anywhere;
+}
+.sent-answer .btn {
+  justify-self: start;
+  min-height: 40px;
+  color: inherit;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Tv-scherm */
+.app.tv-app {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 0%, var(--surface), transparent),
+    var(--bg);
+  overflow: hidden;
+}
+.tv {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  padding: 3vh 4vw 2vh;
+  font-size: clamp(16px, 1.6vw, 34px);
+}
+.tv-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.tv-top .wordmark {
+  flex-grow: 0;
+  font-size: 1.6em;
+}
+.tv-turn {
+  font: 800 1em var(--display);
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.tv-stage {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+}
+.tv-caption {
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font: 700 1.25em/1.3 var(--display);
+  color: var(--gold);
+}
+.tv-unmute {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  animation: nudge 2.4s ease-in-out infinite;
+}
+.tv-start {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 24px;
+}
+.tv-start h1 {
+  font: 800 4em var(--display);
+  letter-spacing: -0.03em;
+}
+.tv-start p {
+  color: var(--muted);
+}
+.tv-start .join-row {
+  display: flex;
+  gap: 12px;
+  width: min(520px, 100%);
+}
+.tv-who {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  min-width: 0;
+}
+.tv-who .face {
+  flex-shrink: 0;
+}
+.tv-who span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tv-who b {
+  font: 800 1.1em/1.1 var(--display);
+  overflow-wrap: break-word;
+}
+.tv-who small {
+  font-size: 0.75em;
+  font-weight: 600;
+  color: var(--muted);
+}
+.lit {
+  box-shadow: 0 0 0 4px var(--gold) !important;
+  transform: scale(1.04);
+}
+.tv-lobby {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: 4vw;
+  align-items: center;
+}
+.tv-join {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  background: var(--surface);
+  border-radius: 36px;
+  padding: 4vh 2vw;
+  text-align: center;
+}
+.tv-join .qr {
+  width: min(22vw, 38vh);
+  height: auto;
+  aspect-ratio: 1;
+}
+.tv-room-code {
+  font: 800 3.4em/1 var(--display);
+  letter-spacing: 0.1em;
+}
+.tv-cast {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(15em, 100%), 1fr));
+  gap: 1.2vw;
+}
+.tv-seat {
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 1em;
+  animation: join 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+.tv-seat.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px dashed var(--surface-2);
+  background: none;
+  color: var(--subtle);
+  font-weight: 700;
+}
+.tv-center {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2vh;
+  text-align: center;
+}
+.tv-center h1 {
+  font: 800 3em/1.05 var(--display);
+  letter-spacing: -0.03em;
+}
+.tv-center p {
+  font-size: 1.3em;
+  color: var(--muted);
+}
+.tv-hero {
+  animation: bob 3s ease-in-out infinite;
+}
+.tv-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.4em;
+  margin-top: 2vh;
+}
+.tv-strip li {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  font: 800 1.2em var(--display);
+}
+.tv-play {
+  display: flex;
+  flex-direction: column;
+  gap: 3vh;
+}
+.tv-question {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+}
+.tv-question .chip {
+  font-size: 0.7em;
+}
+.tv-question h1 {
+  font: 800 2.1em/1.2 var(--display);
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
+}
+.tv-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16em, 100%), 1fr));
+  gap: 1.2vw;
+}
+.tv-card {
+  position: relative;
+  background: var(--surface);
+  border-radius: 28px;
+  padding: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8em;
+  min-height: 9em;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 1.5, 0.4, 1),
+    box-shadow 0.3s,
+    background 0.3s;
+}
+.tv-card.sent .tv-card-text {
+  color: var(--text);
+}
+.tv-card-text {
+  font: 700 1.35em/1.25 var(--display);
+  color: var(--subtle);
+  overflow-wrap: break-word;
+  animation: flipin 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.tv-card.red {
+  background: var(--orange);
+  color: var(--ink);
+}
+.tv-card.blue {
+  background: var(--blue);
+  color: #fff;
+}
+.tv-card.red .tv-card-text,
+.tv-card.blue .tv-card-text,
+.tv-card.red small,
+.tv-card.blue small {
+  color: inherit;
+}
+.tv-card .stamp-wrap {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+  margin: 0;
+}
+.tv-card .stamp {
+  font-size: 1em;
+  animation: stamp 0.42s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.tv-gain {
+  position: absolute;
+  bottom: 0.6em;
+  right: 1em;
+  font: 800 1.6em var(--display);
+}
+.tv-status {
+  text-align: center;
+  font: 700 1.1em var(--display);
+  color: var(--muted);
+}
+.tv-truth {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  background: #fff;
+  color: var(--ink);
+  border-radius: 32px;
+  padding: 3vh 2.5vw;
+  animation: pop 0.5s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+.tv-truth > span {
+  color: #4b4670;
+  font-weight: 600;
+}
+.tv-truth strong {
+  font: 800 2.6em/1.1 var(--display);
+  color: var(--blue);
+  overflow-wrap: break-word;
+}
+.tv-truth p {
+  font-size: 0.95em;
+  line-height: 1.4;
+  color: #4b4670;
+}
+.tv-center h1,
+.tv-podium {
+  position: relative;
+  z-index: 1;
+}
+.tv-podium {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+  width: min(900px, 100%);
+}
+.tv-podium li {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  background: var(--surface);
+  border-radius: 22px;
+  padding: 0.6em 1.2em;
+  text-align: left;
+  animation: rise 0.45s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+.tv-podium li.first {
+  background: var(--orange);
+  color: var(--ink);
+}
+.tv-podium li.first small {
+  color: inherit;
+}
+.tv-podium .tv-who {
+  flex-grow: 1;
+}
+.tv-podium .rank,
+.tv-podium .score {
+  font: 800 1.6em var(--display);
+}
+.tv .rain {
+  height: 100dvh;
+}
+@media (max-width: 800px) {
+  .tv-lobby {
+    grid-template-columns: 1fr;
+  }
+}

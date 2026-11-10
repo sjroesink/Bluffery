@@ -9,3 +9,4 @@ playwright-report/
 /bluffery
 .env
 internal/catalog/audio/*.pending
+internal/catalog/audio/host/*.pending

@@ -6,42 +6,77 @@
 //   node scripts/speak.mjs --limit 5      genereert er maximaal vijf
 //   node scripts/speak.mjs --only q_…     (her)genereert één vraag
 //   node scripts/speak.mjs --prune        verwijdert audio van vervallen ID's
+//   node scripts/speak.mjs --set host     presentatorzinnen en personagenamen voor de tv
+//                                         (internal/catalog/host.nl.json → audio/host/)
 import { readFile, readdir, writeFile, rename, rm, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 
-const catalog = "internal/catalog/questions.nl.json";
-const dir = "internal/catalog/audio";
 const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
 const value = (name) => {
   const i = args.indexOf(name);
   return i < 0 ? undefined : args[i + 1];
 };
-const known = ["--dry-run", "--limit", "--only", "--prune"];
+const known = ["--dry-run", "--limit", "--only", "--prune", "--set"];
 for (let i = 0; i < args.length; i++) {
   if (!known.includes(args[i]))
     throw Error(`Onbekende optie ${args[i]}. Opties: ${known.join(" ")}`);
-  if (args[i] === "--limit" || args[i] === "--only") i++;
+  if (args[i] === "--limit" || args[i] === "--only" || args[i] === "--set") i++;
 }
+const set = value("--set") ?? "questions";
+if (set !== "questions" && set !== "host") throw Error("--set is questions of host.");
 
 if (existsSync(".env")) process.loadEnvFile(".env");
 const key = process.env.ELEVENLABS_API_KEY;
-const voice = process.env.ELEVENLABS_VOICE_ID;
+const voice =
+  (set === "host" && process.env.ELEVENLABS_HOST_VOICE_ID) || process.env.ELEVENLABS_VOICE_ID;
 const model = process.env.ELEVENLABS_MODEL_ID || "eleven_multilingual_v2";
 const format = process.env.ELEVENLABS_OUTPUT_FORMAT || "mp3_44100_64";
 if (!format.startsWith("mp3_"))
   throw Error("ELEVENLABS_OUTPUT_FORMAT moet een mp3_-formaat zijn.");
 
-const { questions } = JSON.parse(await readFile(catalog, "utf8"));
+// Vragen dragen een ID dat al met hun tekst verandert. Presentatorzinnen hebben vaste
+// ID's, dus het manifest onthoudt per ID welke tekst is ingesproken.
+let dir, questions;
+const sha = (text) => createHash("sha256").update(text).digest("hex").slice(0, 16);
+const manifestPath = "internal/catalog/audio/host/manifest.json";
+let manifest = {};
+// Beide workers schrijven het manifest; een keten voorkomt dat ze elkaars .pending raken.
+let saving = Promise.resolve();
+const saveManifest = () =>
+  (saving = saving.then(async () => {
+    const sorted = Object.fromEntries(Object.entries(manifest).sort());
+    await writeFile(manifestPath + ".pending", JSON.stringify(sorted, null, 2) + "\n");
+    await rename(manifestPath + ".pending", manifestPath);
+  }));
+if (set === "host") {
+  dir = "internal/catalog/audio/host";
+  const host = JSON.parse(await readFile("internal/catalog/host.nl.json", "utf8"));
+  questions = [
+    ...host.characters.map((c) => ({ id: `char.${c.id}`, question: c.name })),
+    ...host.lines.map((l) => ({ id: l.id, question: l.text })),
+  ];
+  if (existsSync(manifestPath)) manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+} else {
+  dir = "internal/catalog/audio";
+  ({ questions } = JSON.parse(await readFile("internal/catalog/questions.nl.json", "utf8")));
+}
 await mkdir(dir, { recursive: true });
 const have = new Set(
   (await readdir(dir)).filter((f) => f.endsWith(".mp3")).map((f) => f.slice(0, -4)),
 );
+if (set === "host")
+  for (const q of questions) if (manifest[q.id] !== sha(q.question)) have.delete(q.id);
 const ids = new Set(questions.map((q) => q.id));
 const orphans = [...have].filter((id) => !ids.has(id));
 
 if (flag("--prune")) {
-  for (const id of orphans) await rm(`${dir}/${id}.mp3`);
+  for (const id of orphans) {
+    await rm(`${dir}/${id}.mp3`);
+    delete manifest[id];
+  }
+  if (set === "host") await saveManifest();
   console.log(`${orphans.length} vervallen bestand(en) verwijderd.`);
   process.exit(0);
 }
@@ -57,7 +92,7 @@ todo = todo.slice(0, limit);
 const chars = todo.reduce((n, q) => n + q.question.length, 0);
 
 console.log(
-  `${have.size - orphans.length}/${questions.length} vragen hebben audio; ` +
+  `${have.size - orphans.length}/${questions.length} ${set === "host" ? "zinnen" : "vragen"} hebben audio; ` +
     `${todo.length} te genereren (${chars} tekens).` +
     (orphans.length ? ` ${orphans.length} vervallen (--prune).` : ""),
 );
@@ -97,6 +132,10 @@ async function one() {
   const target = `${dir}/${q.id}.mp3`;
   await writeFile(target + ".pending", audio);
   await rename(target + ".pending", target);
+  if (set === "host") {
+    manifest[q.id] = sha(q.question);
+    await saveManifest();
+  }
   console.log(`[${++done}/${todo.length}] ${q.id} ${(audio.length / 1024).toFixed(0)} kB`);
 }
 async function worker() {

@@ -2,39 +2,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import QRCode from "qrcode";
 import "./style.css";
-type Player = { id: string; name: string; score: number };
-type Source = {
-  url: string;
-  title: string;
-  publisher: string;
-  rightsNote: string;
-};
-type State = {
-  code: string;
-  version: number;
-  phase: "lobby" | "ready" | "playing" | "settled" | "finished";
-  players: Player[];
-  me: string;
-  host: string;
-  guesser: string;
-  turn: number;
-  turns: number;
-  totalTurns: number;
-  skips?: boolean;
-  audio?: string;
-  question?: string;
-  category?: string;
-  answer?: string;
-  role?: string;
-  provisional?: number;
-  revealed?: Record<string, string>;
-  kept?: Record<string, boolean>;
-  roles?: Record<string, string>;
-  gains?: Record<string, number>;
-  result?: string;
-  sources?: Source[];
-  explanation?: string;
-};
+import {
+  Avatar,
+  Confetti,
+  Face,
+  Icon,
+  characterOf,
+  characters,
+  faces,
+  icons,
+  lookFor,
+  type Player,
+  type State,
+} from "./ui";
+import { TvView } from "./tv";
 type Intent = {
   id: string;
   action: string;
@@ -61,137 +42,9 @@ function getPending(): Intent | null {
     );
   }
 }
-type FaceProps = {
-  fill?: string;
-  eye?: string;
-  pupil?: string;
-  look?: number;
-  size?: number;
-  squint?: boolean;
-  shifty?: boolean;
-  mouth?: "smirk" | "sly" | "grin" | "flat";
-  mouthColor?: string;
-  className?: string;
-};
-const mouths = {
-  smirk: "M17 35 Q 26 39 33 33",
-  sly: "M15 33 Q 25 38 34 30",
-  grin: "M14 31 Q 24 40 34 31",
-  flat: "M17 34 H 31",
-};
-function Face({
-  fill = "#3a3370",
-  eye = "#fff",
-  pupil = "#14112b",
-  look = 0,
-  size = 44,
-  squint = false,
-  shifty = false,
-  mouth,
-  mouthColor = "#14112b",
-  className = "",
-}: FaceProps) {
-  return (
-    <svg
-      className={("face " + className).trim()}
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
-      aria-hidden="true"
-    >
-      <rect x="2" y="2" width="44" height="44" rx="14" fill={fill} />
-      {squint ? (
-        <>
-          <path d="M10.5 21 Q 17 15 23.5 21 Q 17 24 10.5 21Z" fill={eye} />
-          <path d="M24.5 21 Q 31 15 37.5 21 Q 31 24 24.5 21Z" fill={eye} />
-          <circle cx="20" cy="20.5" r="2.4" fill={pupil} />
-          <circle cx="34" cy="20.5" r="2.4" fill={pupil} />
-        </>
-      ) : (
-        <>
-          <ellipse cx="17" cy="21" rx="6.5" ry="7.5" fill={eye} />
-          <ellipse cx="31" cy="21" rx="6.5" ry="7.5" fill={eye} />
-          <g className={shifty ? "shifty" : undefined}>
-            <circle cx={17 + look} cy="22" r="3.2" fill={pupil} />
-            <circle cx={31 + look} cy="22" r="3.2" fill={pupil} />
-          </g>
-        </>
-      )}
-      {mouth && (
-        <path
-          d={mouths[mouth]}
-          stroke={mouthColor}
-          strokeWidth="2.6"
-          fill="none"
-          strokeLinecap="round"
-        />
-      )}
-    </svg>
-  );
-}
-const faces = {
-  mark: { fill: "#ff8a3d", mouth: "smirk" },
-  bluffer: { fill: "#14112b", squint: true, mouth: "sly", mouthColor: "#fff" },
-  truth: {
-    fill: "#fff",
-    eye: "#3b5bf5",
-    pupil: "#fff",
-    mouth: "flat",
-    mouthColor: "#3b5bf5",
-  },
-  red: { fill: "#ff8a3d" },
-  blue: { fill: "#3b5bf5" },
-  light: { fill: "#f6f3ff", eye: "#14112b", pupil: "#f6f3ff" },
-  winner: { fill: "#ff8a3d", squint: true, mouth: "grin" },
-} satisfies Record<string, FaceProps>;
-function lookFor(id: string) {
-  let n = 0;
-  for (const c of id) n += c.charCodeAt(0);
-  return [-3, 0, 3][n % 3];
-}
-function Confetti({ big = false }: { big?: boolean }) {
-  return (
-    <span className={"burst" + (big ? " big" : "")} aria-hidden="true">
-      {Array.from({ length: 12 }, (_, i) => (
-        <span key={i} className="cf" />
-      ))}
-    </span>
-  );
-}
-function Icon({ d, size = 20 }: { d: string; size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={d} />
-    </svg>
-  );
-}
-const icons = {
-  trophy:
-    "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4ZM17 6h3v2a3 3 0 0 1-3 3M7 6H4v2a3 3 0 0 0 3 3",
-  check: "M5 12.5l4.5 4.5L19 7.5",
-  share: "M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M12 3v13M7 8l5-5 5 5",
-  lock: "M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2ZM8 11V7a4 4 0 0 1 8 0v4",
-  eye: "M2 12c1-2.5 5-7 10-7s9 4.5 10 7c-1 2.5-5 7-10 7S3 14.5 2 12ZM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6",
-  eyeOff:
-    "M3 3l18 18M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7a12 12 0 0 1-3 4.1M6.6 6.6A12 12 0 0 0 2 12c1 2.5 5 7 10 7a10 10 0 0 0 4.4-1M9.9 9.9a3 3 0 0 0 4.2 4.2",
-  close: "M6 6l12 12M18 6 6 18",
-  plus: "M12 5v14M5 12h14",
-  minus: "M5 12h14",
-  refresh: "M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5",
-  crown: "M4 19h16M4 15 3 7l5 4 4-6 4 6 5-4-1 8Z",
-  exit: "M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H10",
-};
 const maxTurns = 5;
+// Het centrale scherm voor de tv-modus; het speelt zelf niet mee.
+const tvRoute = location.pathname === "/tv";
 const gone = "Je zit niet meer aan deze tafel.";
 function App() {
   const [state, setState] = useState<State | null>(null),
@@ -394,7 +247,7 @@ function App() {
         await refresh();
         return;
       }
-      if (intent.action === "leave") dropped();
+      if (intent.action === "leave" || intent.action === "unwatch") dropped();
       else accept(v, seq);
     } catch (e) {
       if (alive.current)
@@ -437,7 +290,9 @@ function App() {
     [outcome, setOutcome] = useState<string | null>(null),
     [veiled, setVeiled] = useState(false),
     [copied, setCopied] = useState(false),
-    [turnsDraft, setTurnsDraft] = useState<string | null>(null);
+    [turnsDraft, setTurnsDraft] = useState<string | null>(null),
+    [draft, setDraft] = useState(""),
+    [editing, setEditing] = useState(false);
   const prevPhase = useRef<string | undefined>(undefined),
     reveals = useRef({
       key: "",
@@ -457,6 +312,11 @@ function App() {
     return () => clearTimeout(t);
   }, [state?.phase, state?.turn]);
   useEffect(() => setVeiled(false), [state?.turn, state?.phase]);
+  // De eerlijke speler begint met het echte antwoord en maakt er eigen woorden van.
+  useEffect(() => {
+    setDraft(state?.role === "blue" ? state.answer || "" : "");
+    setEditing(false);
+  }, [state?.question, state?.role]);
   const theme =
     state?.phase === "playing" && !guesser && state.role
       ? state.role === "blue"
@@ -514,6 +374,10 @@ function App() {
     busy && pending?.action === "allow-skips"
       ? !!pending.skips
       : !!state?.skips;
+  const tvOn =
+    busy && pending?.action === "tv" ? !!pending.tv : !!state?.tv;
+  const me = state?.players.find((p) => p.id === state.me);
+  const allIn = !!state?.answers;
   const skipToggle = (
     <div className="stepper">
       <label htmlFor="skips">Vragen overslaan</label>
@@ -683,6 +547,55 @@ function App() {
     </>
   );
 
+  if (state?.screen)
+    return (
+      <div className="app tv-app">
+        <TvView
+          state={state}
+          qr={qr}
+          notices={notices}
+          onLeave={() => action("unwatch")}
+        />
+      </div>
+    );
+  if (!state && tvRoute)
+    return (
+      <div className="app tv-app">
+        <main className="tv tv-start">
+          <Face {...faces.mark} size={140} className="mark-bob" shifty />
+          <h1>bluffery</h1>
+          <p>Zet op je telefoon Tv-modus aan en vul hier de tafelcode in.</p>
+          {notices}
+          <form
+            className="join-row"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!disabled) action("watch", { code });
+            }}
+          >
+            <label className="sr-only" htmlFor="tv-code">
+              Tafelcode
+            </label>
+            <input
+              id="tv-code"
+              className="field code-field"
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              maxLength={6}
+              autoComplete="off"
+              placeholder="Tafelcode"
+              pattern="[A-F0-9]{6}"
+            />
+            <button
+              className="btn"
+              disabled={disabled || !/^[A-F0-9]{6}$/.test(code)}
+            >
+              Meekijken
+            </button>
+          </form>
+        </main>
+      </div>
+    );
   let screen: React.ReactNode;
   if (!state) {
     screen = (
@@ -804,11 +717,15 @@ function App() {
                 key={p.id}
                 style={{ animationDelay: `${i * 60}ms` }}
               >
-                <Face
-                  {...(p.id === state.host ? faces.red : {})}
-                  look={lookFor(p.id)}
-                  size={48}
-                />
+                {state.tv ? (
+                  <Avatar player={p} size={48} />
+                ) : (
+                  <Face
+                    {...(p.id === state.host ? faces.red : {})}
+                    look={lookFor(p.id)}
+                    size={48}
+                  />
+                )}
                 <b>{p.name}</b>
                 {p.id === state.host && <span className="badge">host</span>}
                 {host &&
@@ -842,8 +759,59 @@ function App() {
             )}
           </ul>
         </section>
+        {state.tv && (
+          <section className="cast" aria-label="Kies je personage">
+            <div className="section-head">
+              <h2>Personage</h2>
+              <span>{characterOf(me)?.name}</span>
+            </div>
+            <div className="cast-grid">
+              {characters.map((c) => {
+                const owner = state.players.find((p) => p.character === c.id);
+                const mine = owner?.id === state.me;
+                return (
+                  <button
+                    key={c.id}
+                    className="cast-pick"
+                    aria-label={c.name}
+                    aria-pressed={mine}
+                    disabled={disabled || (!!owner && !mine)}
+                    onClick={() => !mine && action("character", { character: c.id })}
+                  >
+                    <Face
+                      fill={c.color}
+                      accessory={c.accessory}
+                      mouth="smirk"
+                      size={40}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        )}
+        {state.tv && (
+          <p className="tv-hint" data-testid="tv-hint">
+            <Icon d={icons.tv} size={18} />
+            {state.screens
+              ? "Tv gekoppeld"
+              : `Open ${location.host}/tv en vul ${state.code} in`}
+          </p>
+        )}
         {host ? (
           <>
+            <div className="stepper">
+              <label htmlFor="tv-mode">Tv-modus</label>
+              <button
+                id="tv-mode"
+                type="button"
+                role="switch"
+                className="switch"
+                aria-checked={tvOn}
+                disabled={disabled}
+                onClick={() => action("tv", { tv: !tvOn })}
+              />
+            </div>
             <div className="stepper">
               <label htmlFor="turns">Beurten per speler</label>
               <button
@@ -978,6 +946,11 @@ function App() {
             ))}
           </div>
         </div>
+        {state.tv && !allIn && (
+          <p className="waiting" data-testid="answers-in">
+            Antwoorden binnen: {state.submitted?.length || 0} / {others.length}
+          </p>
+        )}
         <ul className="suspects grow">
           {others.map((p) => {
             const role = revealed[p.id],
@@ -993,13 +966,18 @@ function App() {
               >
                 {!role ? (
                   <div className={"row" + (kept ? " kept" : "")}>
-                    <Face look={lookFor(p.id)} />
-                    <b>{p.name}</b>
+                    {state.tv ? <Avatar player={p} /> : <Face look={lookFor(p.id)} />}
+                    <b>
+                      {p.name}
+                      {state.answers?.[p.id] && (
+                        <span className="said">{state.answers[p.id]}</span>
+                      )}
+                    </b>
                     <button
                       className="keep"
                       aria-label={`Geloof ik: ${p.name}`}
                       aria-pressed={kept}
-                      disabled={disabled}
+                      disabled={disabled || (state.tv && !allIn)}
                       onClick={() => action("keep", { target: p.id })}
                     >
                       <Icon d={icons.check} />
@@ -1007,7 +985,7 @@ function App() {
                     <button
                       className={"accuse" + (last ? " bonus" : "")}
                       aria-label={`${label} ${p.name}`}
-                      disabled={disabled}
+                      disabled={disabled || (state.tv && !allIn)}
                       onClick={() => action("reveal", { target: p.id })}
                     >
                       {label}
@@ -1042,7 +1020,7 @@ function App() {
         </ul>
         <button
           className="btn ghost"
-          disabled={disabled}
+          disabled={disabled || (state.tv && !allIn)}
           onClick={() => action("bank")}
         >
           Stop &amp; pak {state.provisional ?? 0}
@@ -1077,9 +1055,9 @@ function App() {
             }
           >
             {red ? (
-              <Face {...faces.bluffer} size={150} className="smug" />
+              <Face {...faces.bluffer} size={state.tv ? 110 : 150} className="smug" />
             ) : (
-              <Face {...faces.truth} size={150} className="steady" />
+              <Face {...faces.truth} size={state.tv ? 110 : 150} className="steady" />
             )}
             {caught && (
               <span className="stamp-wrap">
@@ -1089,13 +1067,71 @@ function App() {
           </div>
           <h1>{red ? "Jij blufft" : "Jij bent eerlijk"}</h1>
           <p>
-            {red ? "Verzin een ander antwoord." : "Zeg de waarheid. Klink verdacht."}
+            {state.tv
+              ? red
+                ? "Typ een ander antwoord."
+                : "Typ de waarheid, in je eigen woorden."
+              : red
+                ? "Verzin een ander antwoord."
+                : "Zeg de waarheid. Klink verdacht."}
           </p>
         </div>
         <div className={"answer" + (veiled ? " veiled" : "")}>
           <span>{red ? "Niet zeggen" : "Het antwoord"}</span>
           <strong data-testid="private-answer">{state.answer}</strong>
         </div>
+        {state.tv &&
+          (state.myAnswer !== undefined && (!editing || allIn) ? (
+            <div className="sent-answer">
+              <span>
+                <Icon d={icons.check} size={16} />
+                {allIn ? "Staat op de tv" : "Ingestuurd"}
+              </span>
+              <strong data-testid="my-answer">{state.myAnswer}</strong>
+              {!allIn && (
+                <button
+                  className="btn small ghost"
+                  disabled={disabled}
+                  onClick={() => {
+                    setDraft(state.myAnswer || "");
+                    setEditing(true);
+                  }}
+                >
+                  Aanpassen
+                </button>
+              )}
+            </div>
+          ) : (
+            <form
+              className="answer-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (disabled || !draft.trim()) return;
+                setEditing(false);
+                action("answer", { text: draft.trim() });
+              }}
+            >
+              <label className="sr-only" htmlFor="my-answer">
+                Jouw antwoord
+              </label>
+              <textarea
+                id="my-answer"
+                className="field"
+                rows={2}
+                maxLength={80}
+                placeholder="Jouw antwoord"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value.replace(/\n/g, " "))}
+              />
+              <button
+                className={"btn" + (busy ? " loading" : "")}
+                aria-busy={busy}
+                disabled={disabled || !draft.trim()}
+              >
+                Insturen
+              </button>
+            </form>
+          ))}
       </>
     );
   } else if (state.phase === "settled") {
@@ -1151,6 +1187,9 @@ function App() {
                 />
                 <span className="result-name">
                   <b>{p.name}</b>
+                  {state.answers?.[p.id] && (
+                    <span className="said">{state.answers[p.id]}</span>
+                  )}
                   {isGuesser ? (
                     <span className="tag-rader">Rader</span>
                   ) : role === "blue" ? (
@@ -1405,6 +1444,14 @@ function App() {
                       is alleen een notitie voor jezelf.
                     </span>
                   </li>
+                  {state?.tv && (
+                    <li>
+                      <span>
+                        <b>Tv-modus:</b> typ je antwoord op je telefoon. De tv
+                        leest de vraag voor en toont alle antwoorden.
+                      </span>
+                    </li>
+                  )}
                   {state?.skips && (
                     <li>
                       <span>

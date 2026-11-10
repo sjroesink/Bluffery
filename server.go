@@ -29,9 +29,10 @@ const sessionCookie = "vissig"
 const maxTurns = 5
 
 type Player struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Score int    `json:"score"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	Score     int    `json:"score"`
+	Character string `json:"character,omitempty"`
 }
 type Room struct {
 	Code     string            `json:"code"`
@@ -49,6 +50,10 @@ type Room struct {
 	Result   string            `json:"result,omitempty"`
 	Gains    map[string]int    `json:"gains,omitempty"`
 	Skips    bool              `json:"skips,omitempty"`
+	// Tv-modus: getypte antwoorden en meekijkende schermen die zelf niet spelen.
+	TV      bool              `json:"tv,omitempty"`
+	Screens []string          `json:"screens,omitempty"`
+	Answers map[string]string `json:"answers,omitempty"`
 }
 type Command struct {
 	ID      string `json:"id"`
@@ -59,6 +64,10 @@ type Command struct {
 	Target  string `json:"target,omitempty"`
 	Turns   int    `json:"turns,omitempty"`
 	Skips   bool   `json:"skips,omitempty"`
+	// Tv-modus.
+	TV        bool   `json:"tv,omitempty"`
+	Character string `json:"character,omitempty"`
+	Text      string `json:"text,omitempty"`
 }
 type Server struct {
 	db           *sql.DB
@@ -68,6 +77,7 @@ type Server struct {
 	proxies      []*net.IPNet
 	static       http.Handler
 	eventsHub    eventHub
+	characters   []Character
 }
 
 func random(n int) string {
@@ -126,6 +136,12 @@ func openServer(dir, origin string, fixtures bool) (*Server, error) {
 		db.Close()
 		return nil, e
 	}
+	host, e := loadHost()
+	if e != nil {
+		db.Close()
+		return nil, e
+	}
+	s.characters = host.Characters
 	return s, nil
 }
 func (s *Server) importCatalog() error {
@@ -386,7 +402,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		fail(w, status, msg)
 		return
 	}
-	if c.Action == "leave" {
+	if c.Action == "leave" || c.Action == "unwatch" {
 		json.NewEncoder(w).Encode(map[string]bool{"left": true})
 		return
 	}
@@ -410,7 +426,10 @@ func (s *Server) readRoom(actor string) (Room, error) {
 	}
 	return room, err
 }
-func member(r Room, a string) bool {
+
+// member is iedereen die de tafel mag zien: spelers en meekijkende schermen.
+func member(r Room, a string) bool { return seated(r, a) || screen(r, a) }
+func seated(r Room, a string) bool {
 	for _, p := range r.Players {
 		if p.ID == a {
 			return true
@@ -418,6 +437,17 @@ func member(r Room, a string) bool {
 	}
 	return false
 }
+func screen(r Room, a string) bool {
+	for _, id := range r.Screens {
+		if id == a {
+			return true
+		}
+	}
+	return false
+}
+
+// allIn meldt dat in tv-modus elke niet-rader een antwoord heeft ingestuurd.
+func allIn(r Room) bool            { return r.TV && len(r.Answers) == len(r.Players)-1 }
 func publicID(actor string) string { return actor[:24] }
 func project(r Room, a string) map[string]any {
 	players := make([]Player, len(r.Players))
@@ -425,7 +455,11 @@ func project(r Room, a string) map[string]any {
 	for i := range players {
 		players[i].ID = publicID(players[i].ID)
 	}
-	v := map[string]any{"code": r.Code, "version": r.Version, "phase": r.Phase, "players": players, "host": publicID(r.Host), "me": publicID(a), "turns": r.Turns, "turn": r.Turn, "totalTurns": len(r.Players) * r.Turns, "skips": r.Skips}
+	v := map[string]any{"code": r.Code, "version": r.Version, "phase": r.Phase, "players": players, "host": publicID(r.Host), "me": publicID(a), "turns": r.Turns, "turn": r.Turn, "totalTurns": len(r.Players) * r.Turns, "skips": r.Skips, "tv": r.TV, "screens": len(r.Screens)}
+	watching := screen(r, a)
+	if watching {
+		v["screen"] = true
+	}
 	if r.Phase != "lobby" {
 		v["guesser"] = publicID(r.Players[r.Turn%len(r.Players)].ID)
 	}
@@ -449,11 +483,32 @@ func project(r Room, a string) map[string]any {
 		v["revealed"] = revealed
 		v["kept"] = kept
 		settled := r.Phase == "settled"
-		if a != r.Players[r.Turn%len(r.Players)].ID || settled {
+		// Een scherm staat voor de hele tafel, dus ook voor de rader.
+		player := a != r.Players[r.Turn%len(r.Players)].ID && !watching
+		if player || settled {
 			v["answer"] = r.Question.Answer
 		}
-		if !settled && a != r.Players[r.Turn%len(r.Players)].ID {
+		if !settled && player {
 			v["role"] = r.Roles[a]
+		}
+		if r.TV {
+			submitted := []string{}
+			for _, p := range r.Players {
+				if _, ok := r.Answers[p.ID]; ok {
+					submitted = append(submitted, publicID(p.ID))
+				}
+			}
+			v["submitted"] = submitted
+			if text, ok := r.Answers[a]; ok {
+				v["myAnswer"] = text
+			}
+			if allIn(r) || settled {
+				answers := map[string]string{}
+				for id, text := range r.Answers {
+					answers[publicID(id)] = text
+				}
+				v["answers"] = answers
+			}
 		}
 		if settled {
 			roles := map[string]string{}
@@ -509,6 +564,13 @@ func (s *Server) command(actor string, c Command) (int, string) {
 	if e = tx.QueryRow(`SELECT room FROM sessions WHERE hash=? AND expires>?`, actor, time.Now().Unix()).Scan(&current); e != nil {
 		return 404, "Geen actieve kamer gevonden."
 	}
+	if current != "" && (c.Action == "create" || c.Action == "join" || c.Action == "watch") {
+		// Een tafel die intussen is opgeheven, houdt niemand meer vast.
+		var old Room
+		if tx.QueryRow(`SELECT data FROM rooms WHERE code=? AND expires>?`, current, time.Now().Unix()).Scan(&raw) != nil || json.Unmarshal([]byte(raw), &old) != nil || !member(old, actor) {
+			current = ""
+		}
+	}
 	if c.Action == "create" {
 		if !validName(c.Name) {
 			return 400, "Kies een naam van 1–24 zichtbare tekens."
@@ -522,6 +584,7 @@ func (s *Server) command(actor string, c Command) (int, string) {
 			return 503, "Alle tafels zijn bezet."
 		}
 		room = Room{Code: strings.ToUpper(random(3)), Host: actor, Version: 1, Phase: "lobby", Turns: 0, Players: []Player{{ID: actor, Name: c.Name}}}
+		room.Players[0].Character = s.freeCharacter(room)
 	}
 	if c.Action != "create" {
 		if c.Action == "join" {
@@ -530,6 +593,15 @@ func (s *Server) command(actor string, c Command) (int, string) {
 			}
 			if current != "" {
 				return 409, "Je zit al in een kamer."
+			}
+			current = c.Code
+		}
+		if c.Action == "watch" {
+			if !codeRE.MatchString(c.Code) {
+				return 400, "Controleer de kamercode."
+			}
+			if current != "" {
+				return 409, "Dit scherm kijkt al mee."
 			}
 			current = c.Code
 		}
@@ -547,10 +619,30 @@ func (s *Server) command(actor string, c Command) (int, string) {
 			if len(room.Players) >= 10 {
 				return 409, "Deze kamer is vol (maximaal 10)."
 			}
-			room.Players = append(room.Players, Player{ID: actor, Name: c.Name})
+			room.Players = append(room.Players, Player{ID: actor, Name: c.Name, Character: s.freeCharacter(room)})
+			room.Version++
+		} else if c.Action == "watch" {
+			if len(room.Screens) >= 2 {
+				return 409, "Er kijken al twee schermen mee."
+			}
+			room.Screens = append(room.Screens, actor)
+			if room.Phase == "lobby" && !room.TV {
+				turnOnTV(s, &room)
+			}
+			room.Version++
+		} else if screen(room, actor) {
+			if c.Action != "unwatch" {
+				return 403, "Een scherm kijkt alleen mee."
+			}
+			for i, id := range room.Screens {
+				if id == actor {
+					room.Screens = append(room.Screens[:i:i], room.Screens[i+1:]...)
+					break
+				}
+			}
 			room.Version++
 		} else {
-			if !member(room, actor) {
+			if !seated(room, actor) {
 				return 404, "Geen actieve kamer gevonden."
 			}
 			if c.Version != room.Version {
@@ -578,7 +670,7 @@ func (s *Server) command(actor string, c Command) (int, string) {
 		return 503, "Opslag tijdelijk niet beschikbaar."
 	}
 	seat := room.Code
-	if c.Action == "leave" {
+	if c.Action == "leave" || c.Action == "unwatch" {
 		seat = ""
 	}
 	_, e = tx.Exec(`UPDATE sessions SET room=? WHERE hash=?`, seat, actor)
@@ -634,6 +726,50 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 			return 400, fmt.Sprintf("Kies 1 tot en met %d beurten.", maxTurns)
 		}
 		r.Turns = c.Turns
+	case "tv":
+		if !host || r.Phase != "lobby" {
+			return 403, "Alleen de host in de lobby."
+		}
+		if c.TV {
+			turnOnTV(s, r)
+		} else {
+			r.TV = false
+		}
+	case "character":
+		if r.Phase != "lobby" || !s.character(c.Character) {
+			return 400, "Kies een personage uit de lijst."
+		}
+		for _, p := range r.Players {
+			if p.Character == c.Character && p.ID != a {
+				return 409, "Dat personage is al gekozen."
+			}
+		}
+		for i, p := range r.Players {
+			if p.ID == a {
+				r.Players[i].Character = c.Character
+			}
+		}
+	case "answer":
+		if a == guesser || r.Phase != "playing" || !r.TV {
+			return 403, "Alleen spelers met een rol sturen een antwoord in."
+		}
+		if allIn(*r) {
+			return 409, "De antwoorden zijn al binnen."
+		}
+		if !validText(c.Text, 80) {
+			return 400, "Typ een antwoord van 1–80 tekens."
+		}
+		if r.Roles[a] == "red" {
+			for _, real := range append([]string{r.Question.Answer}, r.Question.Aliases...) {
+				if sameAnswer(c.Text, real) {
+					return 409, "Dat is het echte antwoord. Verzin iets anders."
+				}
+			}
+		}
+		if r.Answers == nil {
+			r.Answers = map[string]string{}
+		}
+		r.Answers[a] = c.Text
 	case "allow-skips":
 		if !host || r.Phase == "finished" {
 			return 403, "Alleen de host tijdens het spel."
@@ -693,6 +829,9 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 		if a != guesser || r.Phase != "playing" {
 			return 403, "Alleen de rader kan dit tijdens de beurt."
 		}
+		if r.TV && !allIn(*r) {
+			return 409, "Wacht op de antwoorden."
+		}
 		if c.Action == "bank" {
 			settle(r, "bank")
 			break
@@ -732,6 +871,7 @@ func (s *Server) transition(r *Room, a string, c Command) (int, string) {
 		r.Roles = nil
 		r.Revealed = nil
 		r.Kept = nil
+		r.Answers = nil
 	case "new-game":
 		if !host || r.Phase != "finished" {
 			return 403, "De host kan na afloop een nieuw spel openen."
@@ -769,6 +909,7 @@ func (s *Server) deal(r *Room, guesser string) (int, string) {
 	r.Roles = map[string]string{}
 	r.Revealed = map[string]bool{}
 	r.Kept = map[string]bool{}
+	r.Answers = nil
 	others := []string{}
 	for _, p := range r.Players {
 		if p.ID != guesser {
@@ -817,6 +958,7 @@ func dropPlayer(r *Room, id string) {
 	delete(r.Revealed, id)
 	delete(r.Kept, id)
 	delete(r.Gains, id)
+	delete(r.Answers, id)
 	if broken || (r.Phase == "settled" && guesserLeft) {
 		r.Phase = "ready"
 	}
@@ -828,6 +970,17 @@ func dropPlayer(r *Room, id string) {
 		r.Roles = nil
 		r.Revealed = nil
 		r.Kept = nil
+		r.Answers = nil
+	}
+}
+
+// turnOnTV zet de tv-modus aan en geeft spelers uit oudere tafels alsnog een personage.
+func turnOnTV(s *Server, r *Room) {
+	r.TV = true
+	for i := range r.Players {
+		if r.Players[i].Character == "" {
+			r.Players[i].Character = s.freeCharacter(*r)
+		}
 	}
 }
 func redCount(r Room) int {
