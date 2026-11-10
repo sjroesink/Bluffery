@@ -103,6 +103,12 @@ node scripts/speak.mjs --set host             # schrijft internal/catalog/audio/
 node scripts/speak.mjs --set host --prune     # mp3's van verwijderde zinnen opruimen
 ```
 
+Na elke beurt spreekt de presentator ook het echte antwoord uit (`--set answers`, naar `internal/catalog/audio/answers/`). Die bestandsnaam is afgeleid van het antwoord plus het vraag-ID. De rader kent het vraag-ID, maar kan het pad zonder het antwoord niet uitrekenen. De server geeft het pad (`answerAudio`) pas mee na de uitslag.
+
+```sh
+node scripts/speak.mjs --set answers          # gebruikt ELEVENLABS_HOST_VOICE_ID als die er is
+```
+
 `audio/host/manifest.json` onthoudt welke tekst bij elke mp3 hoort. Pas je een zin aan, dan telt die vanzelf weer als te genereren. Ontbreekt een mp3, dan toont de tv alleen de ondertitel.
 
 ## PWA en privacygrens

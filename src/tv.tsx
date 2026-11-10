@@ -156,7 +156,9 @@ function useNarrator(state: State, sound: boolean) {
           ),
         ],
       });
-      out.push({ clips: [say("answer.pre"), { text: s.answer || "" }] });
+      out.push({
+        clips: [say("answer.pre"), { src: s.answerAudio, text: s.answer || "" }],
+      });
       const leader = [...s.players].sort((a, b) => b.score - a.score)[0];
       if (leader?.score)
         out.push({

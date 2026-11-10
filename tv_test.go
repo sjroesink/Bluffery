@@ -204,9 +204,29 @@ func TestStaleSeatAllowsWatch(t *testing.T) {
 	}
 }
 
+// Het script en de server moeten dezelfde naam uit antwoord en vraag-ID afleiden.
+func TestAnswerAudioCoversCatalog(t *testing.T) {
+	qs, e := loadCatalog(false)
+	if e != nil {
+		t.Fatal(e)
+	}
+	found := 0
+	for _, q := range qs {
+		if a := answerAudio(q); a != "" {
+			found++
+			if strings.Contains(a, q.ID) {
+				t.Fatal("answer audio path reveals the question ID", a)
+			}
+		}
+	}
+	if entries, _ := audioFS.ReadDir("internal/catalog/audio/answers"); len(entries) != found {
+		t.Fatalf("%d answer files, %d match the catalog", len(entries), found)
+	}
+}
+
 func TestHostAudioRoute(t *testing.T) {
 	h := publicHandler()
-	for _, p := range []string{"/audio/host/x.mp3", "/audio/host/../main.go", "/audio/host/manifest.json", "/audio/host/"} {
+	for _, p := range []string{"/audio/host/x.mp3", "/audio/answers/a_000000000000000000000000.mp3", "/audio/host/../main.go", "/audio/host/manifest.json", "/audio/host/"} {
 		w := httptest.NewRecorder()
 		h.ServeHTTP(w, httptest.NewRequest("GET", p, nil))
 		if w.Code != 404 {

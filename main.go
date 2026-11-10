@@ -27,8 +27,18 @@ var publicFS embed.FS
 //go:embed all:internal/catalog/audio
 var audioFS embed.FS
 
-// audioRE laat alleen vraag-ID's en presentatorclips (audio/host) door.
-var audioRE = regexp.MustCompile(`^(q_[0-9a-f]{24}|host/[a-z0-9.-]{1,64})\.mp3$`)
+// audioRE laat alleen vraag-ID's, antwoorden en presentatorclips (audio/host) door.
+var audioRE = regexp.MustCompile(`^(q_[0-9a-f]{24}|answers/a_[0-9a-f]{24}|host/[a-z0-9.-]{1,64})\.mp3$`)
+
+// answerAudio hangt aan het antwoord zelf: wie alleen het vraag-ID kent, kan het pad
+// niet uitrekenen. De server geeft het pas na de uitslag mee.
+func answerAudio(q Question) string {
+	name := "answers/a_" + hash(q.Answer + "\n" + q.ID)[:24] + ".mp3"
+	if _, e := fs.Stat(audioFS, "internal/catalog/audio/"+name); e != nil {
+		return ""
+	}
+	return "/audio/" + name
+}
 
 func questionAudio(id string) string {
 	if _, e := fs.Stat(audioFS, "internal/catalog/audio/"+id+".mp3"); e != nil {

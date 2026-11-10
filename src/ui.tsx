@@ -44,6 +44,7 @@ export type State = {
   submitted?: string[];
   myAnswer?: string;
   answers?: Record<string, string>;
+  answerAudio?: string;
 };
 export type FaceProps = {
   fill?: string;

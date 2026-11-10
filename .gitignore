@@ -10,3 +10,4 @@ playwright-report/
 .env
 internal/catalog/audio/*.pending
 internal/catalog/audio/host/*.pending
+internal/catalog/audio/answers/*.pending

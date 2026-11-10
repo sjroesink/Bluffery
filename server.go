@@ -524,6 +524,9 @@ func project(r Room, a string) map[string]any {
 			v["sources"] = r.Question.Sources
 			v["explanation"] = r.Question.Explanation
 			v["result"] = r.Result
+			if audio := answerAudio(*r.Question); audio != "" {
+				v["answerAudio"] = audio
+			}
 		}
 	}
 	return v

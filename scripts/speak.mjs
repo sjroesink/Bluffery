@@ -8,6 +8,7 @@
 //   node scripts/speak.mjs --prune        verwijdert audio van vervallen ID's
 //   node scripts/speak.mjs --set host     presentatorzinnen en personagenamen voor de tv
 //                                         (internal/catalog/host.nl.json → audio/host/)
+//   node scripts/speak.mjs --set answers  het echte antwoord per vraag (→ audio/answers/)
 import { readFile, readdir, writeFile, rename, rm, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
@@ -25,12 +26,14 @@ for (let i = 0; i < args.length; i++) {
   if (args[i] === "--limit" || args[i] === "--only" || args[i] === "--set") i++;
 }
 const set = value("--set") ?? "questions";
-if (set !== "questions" && set !== "host") throw Error("--set is questions of host.");
+if (!["questions", "host", "answers"].includes(set))
+  throw Error("--set is questions, host of answers.");
 
 if (existsSync(".env")) process.loadEnvFile(".env");
 const key = process.env.ELEVENLABS_API_KEY;
 const voice =
-  (set === "host" && process.env.ELEVENLABS_HOST_VOICE_ID) || process.env.ELEVENLABS_VOICE_ID;
+  (set !== "questions" && process.env.ELEVENLABS_HOST_VOICE_ID) ||
+  process.env.ELEVENLABS_VOICE_ID;
 const model = process.env.ELEVENLABS_MODEL_ID || "eleven_multilingual_v2";
 const format = process.env.ELEVENLABS_OUTPUT_FORMAT || "mp3_44100_64";
 if (!format.startsWith("mp3_"))
@@ -62,6 +65,15 @@ if (set === "host") {
   dir = "internal/catalog/audio";
   ({ questions } = JSON.parse(await readFile("internal/catalog/questions.nl.json", "utf8")));
 }
+if (set === "answers") {
+  // Het vraag-ID is zichtbaar voor de rader; de bestandsnaam hangt daarom ook aan het
+  // antwoord, zodat niemand de mp3 vóór de uitslag kan opvragen (zie answerAudio in main.go).
+  dir = "internal/catalog/audio/answers";
+  questions = questions.map((q) => ({
+    id: "a_" + createHash("sha256").update(`${q.answer}\n${q.id}`).digest("hex").slice(0, 24),
+    question: q.answer,
+  }));
+}
 await mkdir(dir, { recursive: true });
 const have = new Set(
   (await readdir(dir)).filter((f) => f.endsWith(".mp3")).map((f) => f.slice(0, -4)),
@@ -92,7 +104,7 @@ todo = todo.slice(0, limit);
 const chars = todo.reduce((n, q) => n + q.question.length, 0);
 
 console.log(
-  `${have.size - orphans.length}/${questions.length} ${set === "host" ? "zinnen" : "vragen"} hebben audio; ` +
+  `${have.size - orphans.length}/${questions.length} ${{ host: "zinnen", answers: "antwoorden" }[set] || "vragen"} hebben audio; ` +
     `${todo.length} te genereren (${chars} tekens).` +
     (orphans.length ? ` ${orphans.length} vervallen (--prune).` : ""),
 );
@@ -118,6 +130,9 @@ async function speak(q) {
       await new Promise((r) => setTimeout(r, wait));
       continue;
     }
+    // De inhoudsfilter van ElevenLabs slaat soms onschuldige tekst af; dan geen mp3 en
+    // toont de tv alleen de ondertitel. Elke andere fout stopt het script.
+    if (res.status === 403 && body.includes("content_against_policy")) return null;
     throw Error(`${q.id}: HTTP ${res.status} ${body}`);
   }
 }
@@ -126,9 +141,15 @@ async function speak(q) {
 // De eerste vraag gaat alleen, zodat ElevenLabs de stem eenmalig kan toevoegen.
 let next = 0;
 let done = 0;
+const blocked = [];
 async function one() {
   const q = todo[next++];
   const audio = await speak(q);
+  if (!audio) {
+    blocked.push(q);
+    console.log(`[${++done}/${todo.length}] ${q.id} geweigerd door de inhoudsfilter`);
+    return;
+  }
   const target = `${dir}/${q.id}.mp3`;
   await writeFile(target + ".pending", audio);
   await rename(target + ".pending", target);
@@ -143,3 +164,8 @@ async function worker() {
 }
 await one();
 await Promise.all([worker(), worker()]);
+if (blocked.length)
+  console.log(
+    `${blocked.length} geweigerd (blijft ondertitel):\n` +
+      blocked.map((q) => `  ${q.id} ${JSON.stringify(q.question)}`).join("\n"),
+  );
