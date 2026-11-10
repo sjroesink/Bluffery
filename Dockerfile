@@ -6,6 +6,8 @@ COPY index.html tsconfig.json ./
 COPY src ./src
 COPY public ./public
 COPY scripts/worker.mjs ./scripts/worker.mjs
+# Presentatorteksten en personages voor de tv-modus; geen vragen of antwoorden.
+COPY internal/catalog/host.nl.json ./internal/catalog/host.nl.json
 RUN npm run build
 
 FROM golang:1.27.3-alpine AS build
